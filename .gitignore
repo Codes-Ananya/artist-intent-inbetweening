@@ -22,3 +22,4 @@ third_party/
 *.tar
 *.tar.gz
 *.part
+benchmark_outputs/

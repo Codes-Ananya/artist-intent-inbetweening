@@ -85,6 +85,8 @@ def test_backend_failure_does_not_fallback(tmp_path, monkeypatch):
 
 def test_out_of_memory_raises_clear_rife_error(tmp_path, monkeypatch):
     import torch
+    if not torch.cuda.is_available():
+        pytest.skip("requires CUDA to reach mocked inference")
     backend = RifeBackend(tmp_path)
     monkeypatch.setattr(backend, "_require_assets_and_cuda", lambda: (torch, tmp_path))
 

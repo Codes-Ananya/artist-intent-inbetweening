@@ -53,3 +53,17 @@ Run the GPU acceptance check in a normal WSL shell with GPU passthrough:
 ```
 
 The restricted Codex sandbox may not expose `/dev/dxg`; its CUDA failure does not imply that the normal WSL shell lacks CUDA. The smoke script must pass there before treating RIFE inference as GPU-verified.
+
+## Milestone 3: controlled baseline benchmark
+
+The local synthetic diagnostic suite generates ten deterministic 256×256 line-art motion cases with known intermediate frames. It compares the existing crossfade and RIFE baselines. This does not measure natural artist performance or preference. See [benchmark protocol](docs/BENCHMARK_PROTOCOL.md) and [metric definitions](docs/METRICS.md).
+
+```bash
+.venv/bin/python -m inbetween.benchmark --output outputs/benchmark --backends crossfade
+.venv/bin/python -m inbetween.benchmark --quick --backends crossfade --output outputs/benchmark-quick
+.venv/bin/python -m inbetween.benchmark --backends crossfade rife --output outputs/benchmark-full
+.venv/bin/python scripts/benchmark_smoke_test.py
+./launch.sh
+```
+
+The Gradio **Compare baselines** tab accepts two PNGs or a built-in benchmark case and runs both backends at matching timestamps. It offers both animations, frame strips, PNG sequences, GIFs, MP4s, manifests, runtime and VRAM. Upload an ordered complete ground-truth PNG sequence, including endpoints, to show metrics for your own sequence. A failed RIFE run is shown as failed. Reports and contact sheets are under the selected ignored `outputs/benchmark*/` directory.
