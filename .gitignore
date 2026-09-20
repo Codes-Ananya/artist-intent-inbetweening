@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+outputs/
+runs/
+cache/
+checkpoints/
+models/weights/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+*.log
+.vscode/
