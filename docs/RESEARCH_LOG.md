@@ -50,6 +50,19 @@ Sandbox validation: application `pip check` and offline pinned-lock dry run pass
 
 ### Methodology correction
 
-Independent review found that the earlier guided benchmark aggregate included oracle index k for the guided method. The previous GPU run is superseded for quantitative interpretation; its aggregate values are not evidence for a paired comparison. The corrected primary means use indices 1..N excluding k for both methods, report k separately, and explicitly represent perfect PSNR. Runtime values remain operational diagnostics because guided invokes the backend twice and endpoint-only once, with potentially different model-loading behavior. A corrected normal-WSL GPU run is pending; no corrected GPU result is claimed here.
+Independent review found that the earlier guided benchmark aggregate included oracle index k for the guided method. The earlier v1 aggregates are superseded for quantitative interpretation; their values are not evidence for a paired comparison. The corrected primary means use indices 1..N excluding k for both methods, report k separately, and explicitly represent perfect PSNR. Runtime values remain operational diagnostics because guided invokes the backend twice and endpoint-only once, with potentially different model-loading behavior.
 
 Correction validation: compilation passed; full pytest passed 43 tests with 1 CUDA-dependent skip. The CPU guided crossfade benchmark completed all four cases for both methods; its JSON parsed with strict nonfinite rejection and every record used the same generated-only frame index. The sample export and quick crossfade baseline benchmark passed. Gradio startup returned HTTP 200 on loopback port 7861. `git diff --check` passed, and ignore checks covered generated outputs, RIFE weights, and the virtual environment. The GPU benchmark was not rerun in the restricted shell.
+
+### Corrected normal-WSL GPU benchmark, 2026-09-21
+
+The corrected local RIFE run at `outputs/guided-breakdown-benchmark-v2` completed all four procedural cases with both endpoint-only and guided methods successful. Primary metrics compare the identical generated indices `[1, 2, 4, 5, 6]` for both methods; oracle breakdown index 3 is excluded from both primary aggregates and reported separately. A, D and B passed exact-pixel checks. Peak CUDA allocation was 86,549,504 bytes. Cloud compute was not used.
+
+| Case | Guided PSNR gain | SSIM gain | Edge F1 gain | Chamfer reduction | Trajectory error reduction |
+|---|---:|---:|---:|---:|---:|
+| `curved_arc` | +0.83 dB | +0.012 | +0.246 | 68.9% | 81.1% |
+| `hold_then_fast` | +17.05 dB | +0.028 | +0.305 | 61.0% | 44.7% |
+| `exaggeration` | +1.81 dB | +0.020 | +0.394 | 71.4% | 73.7% |
+| `occlusion` | +7.12 dB | +0.028 | +0.184 | 74.2% | 66.3% |
+
+For `occlusion`, trajectory coverage improved from 3/5 endpoint-only frames to 5/5 guided frames; its trajectory error means therefore cover different numbers of measurable frames. These are procedural oracle-breakdown results. They do not establish performance with artist-created drawings or novelty. Runtime values are not used for method comparison because backend invocation and model-loading behavior differ. The earlier v1 aggregates are superseded by this corrected run.
