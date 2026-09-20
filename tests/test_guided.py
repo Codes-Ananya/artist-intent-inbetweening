@@ -9,6 +9,7 @@ from PIL import Image
 from inbetween.core import CrossfadeBackend, ValidationError
 from inbetween.guided import create_guided_run, generate_with_breakdown
 from inbetween.guided_benchmark import run_guided_benchmark
+from inbetween import guided_benchmark
 from inbetween import app
 
 
@@ -67,6 +68,10 @@ def test_manifest_and_saved_pixels(tmp_path):
     manifest = create_guided_run(paths[0], paths[1], paths[2], 3, 2, output_root=tmp_path / "out", backend=Fake())
     guided = manifest["guided_breakdown"]
     assert guided["authoritative_frame_indices"] == [0, 2, 4]
+    assert guided["requested_intermediate_count"] == 3
+    assert guided["inferred_frame_count"] == 2
+    assert manifest["requested_intermediate_count"] == 3 and manifest["inferred_frame_count"] == 2
+    assert manifest["preprocessing"] is None and manifest["model_load_seconds"] is None
     assert guided["exact_pixel_checks"] == {"A": True, "D": True, "B": True}
     assert [s["generated_intermediate_count"] for s in guided["segments"]] == [1, 1]
     assert len(guided["input_sha256"]) == 3
@@ -79,6 +84,16 @@ def test_benchmark_counts_strict_json_and_failure_isolation(tmp_path):
     assert [r["frame_count"] for r in records] == [4, 4]
     raw = (tmp_path / "ok" / "results.json").read_text()
     json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+    result = json.loads(raw)
+    for record in records:
+        assert record["evaluated_frame_indices"] == [2]
+        assert record["excluded_frame_indices"] == [1]
+        assert record["evaluated_frame_count"] == record["trajectory_total_frames"] == 1
+        assert record["breakdown_index_metrics"]["frame_index"] == 1
+    assert result["sequences"][1]["breakdown_index_metrics"]["is_authoritative_breakdown"]
+    assert not result["sequences"][0]["breakdown_index_metrics"]["is_authoritative_breakdown"]
+    assert "Generated-only paired means" in (tmp_path / "ok" / "summary.md").read_text()
+    assert "not a fair speed comparison" in (tmp_path / "ok" / "summary.md").read_text()
     class Failing(Fake):
         def generate(self, *args):
             raise RuntimeError("boom")
@@ -86,14 +101,44 @@ def test_benchmark_counts_strict_json_and_failure_isolation(tmp_path):
     assert len(failed) == 4 and all(r["status"] == "failed" for r in failed)
 
 
+def test_oracle_cannot_inflate_primary_means_and_perfect_psnr(tmp_path, monkeypatch):
+    values = iter([0.4, 0.4, 1.0, 0.2])
+    def metric_stub(*args):
+        score = next(values)
+        return {"psnr_db": float("inf") if score == 1.0 else score,
+                "ssim": score, "edge_f1": score, "chamfer_px": score}
+    monkeypatch.setattr(guided_benchmark, "metrics", metric_stub)
+    records = run_guided_benchmark(tmp_path / "benchmark", ["curved_arc"], 2, "crossfade", 1, Fake)
+    assert [r["evaluated_frame_indices"] for r in records] == [[2], [2]]
+    for key in ("psnr_db", "ssim", "edge_f1", "chamfer_px"):
+        assert records[0]["means"][key] == pytest.approx(0.4)
+        assert records[1]["means"][key] == pytest.approx(0.2)
+    assert records[1]["means"]["trajectory_error_px"] == next(
+        row["trajectory_error_px"] for row in json.loads((tmp_path / "benchmark" / "results.json").read_text())["frames"]
+        if row["method"] == "guided" and row["frame_index"] == 2)
+    assert records[1]["breakdown_index_metrics"]["psnr_db"] is None
+    assert records[1]["breakdown_index_metrics"]["psnr_perfect_match"] is True
+    raw = (tmp_path / "benchmark" / "results.json").read_text()
+    json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+
+
+def test_perfect_evaluated_psnr_has_explicit_undefined_mean(tmp_path, monkeypatch):
+    monkeypatch.setattr(guided_benchmark, "metrics", lambda *args: {"psnr_db": float("inf"), "ssim": 1.0, "edge_f1": 1.0, "chamfer_px": 0.0})
+    records = run_guided_benchmark(tmp_path / "perfect", ["curved_arc"], 2, "crossfade", 1, Fake)
+    assert all(r["means"]["psnr_db"] is None for r in records)
+    assert all(r["generated_only_psnr_perfect_match_count"] == 1 for r in records)
+    assert all(r["generated_only_psnr_mean_undefined_due_to_perfect_match"] for r in records)
+    json.loads((tmp_path / "perfect" / "results.json").read_text(), parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+
+
 def test_cli_and_ui_failure(tmp_path, monkeypatch):
     root = str(__import__("pathlib").Path(__file__).resolve().parents[1])
     env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
     result = subprocess.run([sys.executable, "-m", "inbetween.guided_benchmark", "--help"], cwd=root, env=env, capture_output=True, text=True)
     assert result.returncode == 0 and "--backend" in result.stdout
-    smoke = subprocess.run([sys.executable, "scripts/guided_rife_smoke_test.py"], cwd=root, env=env, capture_output=True, text=True)
-    assert "ModuleNotFoundError" not in smoke.stderr
-    assert smoke.returncode in (0, 1)
+    from scripts import guided_rife_smoke_test
+    monkeypatch.setattr(guided_rife_smoke_test, "run_guided_benchmark", lambda *a, **kw: [{"status": "ok"}] * 2)
+    guided_rife_smoke_test.main()
     selected = []
     class Failing:
         def __init__(self):

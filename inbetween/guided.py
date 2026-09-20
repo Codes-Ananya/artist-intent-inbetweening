@@ -62,11 +62,20 @@ class GuidedBackend(InterpolationBackend):
         if not all(checks.values()):
             raise RuntimeError("Authoritative frame pixel validation failed")
         metadata = dict(getattr(self.backend, "last_run_metadata", {}))
+        # These describe only the final segment; retain them in segments instead.
+        metadata.pop("preprocessing", None)
+        metadata.pop("model_load_seconds", None)
         metadata.update({"requested_intermediate_count": intermediate_count,
                          "generated_intermediate_count": intermediate_count - 1,
+                         "inferred_frame_count": intermediate_count - 1,
+                         "preprocessing": None,
+                         "model_load_seconds": None,
                          "inference_seconds": sum(s["diagnostics"].get("inference_seconds", s["backend_wall_seconds"]) for s in segments),
                          "peak_cuda_memory_bytes": max((s["diagnostics"].get("peak_cuda_memory_bytes") or 0 for s in segments), default=0) or None,
                          "guided_breakdown": {"position": self.position, "authoritative_frame_indices": indices,
+                                              "requested_intermediate_count": intermediate_count,
+                                              "inferred_frame_count": intermediate_count - 1,
+                                              "backend_invocation_count": 2,
                                               "exact_pixel_checks": checks, "segments": segments}})
         self.last_run_metadata = metadata
         return result

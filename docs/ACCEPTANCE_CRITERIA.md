@@ -31,4 +31,6 @@
 - Guided timeline: N+2 frames, D at k, segment counts k-1 and N-k, exact authoritative A/D/B PNG pixels.
 - Paired Gradio endpoint-only and guided RIFE exports and manifest diagnostics; failures surface without fallback.
 - Four controlled oracle-breakdown categories with identical frame counts, metric coverage, strict JSON and isolated failures.
+- Primary generated-only paired metrics exclude k for both methods; index-k oracle metrics, perfect PSNR, evaluated counts, and runtime limitations are explicit.
+- Normal pytest never launches real RIFE inference or writes persistent smoke outputs when CUDA is available.
 - CPU fake-backend tests and normal-WSL CUDA smoke command. Generated assets remain ignored.

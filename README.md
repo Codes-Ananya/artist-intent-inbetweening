@@ -74,8 +74,10 @@ The **Artist-guided breakdown** tab compares endpoint-only RIFE with RIFE split 
 
 The controlled oracle-breakdown diagnostic uses four existing synthetic cases and ground-truth-derived D. It is not an artist study. See [guided protocol](docs/GUIDED_BREAKDOWN_PROTOCOL.md).
 
+Its primary generated-only metrics compare indices 1..N excluding D at k for both methods. Index-k metrics are separate and guided D is labeled authoritative. Guided generation calls the backend twice; endpoint-only calls it once, so wall-clock values are operational diagnostics rather than a fair speed comparison. The guided manifest records N requested positions, N-1 inferred frames, and authoritative indices [0, k, N+1]; segment diagnostics are authoritative for preprocessing and model load.
+
 ```bash
-.venv/bin/python -m inbetween.guided_benchmark --backend rife --output outputs/guided-breakdown-benchmark
+.venv/bin/python -m inbetween.guided_benchmark --backend rife --output outputs/guided-breakdown-benchmark-corrected
 ```
 
 In a normal WSL shell with CUDA and the pinned local RIFE assets, run `.venv/bin/python scripts/guided_rife_smoke_test.py` for a small GPU acceptance check.

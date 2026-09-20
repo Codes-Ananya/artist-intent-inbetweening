@@ -16,6 +16,17 @@ from .run import create_run
 
 CATEGORIES = ("curved_arc", "hold_then_fast", "exaggeration", "occlusion")
 BACKENDS = {"rife": RifeBackend, "crossfade": CrossfadeBackend}
+METRIC_KEYS = ("psnr_db", "ssim", "edge_f1", "chamfer_px", "trajectory_error_px")
+
+
+def _aggregate(frame_rows):
+    result = {}
+    for key in METRIC_KEYS:
+        valid = [row[key] for row in frame_rows if row[key] is not None]
+        perfect = sum(row["psnr_perfect_match"] for row in frame_rows) if key == "psnr_db" else 0
+        # An infinite PSNR has no finite arithmetic mean with imperfect frames.
+        result[key] = float(np.mean(valid)) if valid and not perfect else None
+    return result
 
 
 def run_guided_benchmark(output="outputs/guided-breakdown-benchmark", categories=CATEGORIES,
@@ -49,20 +60,29 @@ def run_guided_benchmark(output="outputs/guided-breakdown-benchmark", categories
                     raise ValueError("Authoritative pixel mismatch")
                 frame_rows = []
                 for i in range(1, count + 1):
-                    values = {key: _finite_or_none(value) for key, value in metrics(case.frames[i], frames[i]).items()}
+                    raw = metrics(case.frames[i], frames[i])
+                    values = {key: _finite_or_none(value) for key, value in raw.items()}
                     observed = _landmark(frames[i])
                     values.update(case_id=case.identifier, method=method, frame_index=i,
+                                  is_authoritative_breakdown=method == "guided" and i == k,
+                                  psnr_perfect_match=bool(np.isposinf(raw["psnr_db"])),
                                   trajectory_error_px=_finite_or_none(trajectory_error([case.landmarks[i]], [observed])) if observed else None)
                     frame_rows.append(values)
                 rows.extend(frame_rows)
                 visual = root / "visuals" / case.identifier / method
                 visual.mkdir(parents=True, exist_ok=True)
                 _visuals(visual, case.frames, frames)
-                keys = ("psnr_db", "ssim", "edge_f1", "chamfer_px", "trajectory_error_px")
-                means = {key: (float(np.mean(valid)) if (valid := [r[key] for r in frame_rows if r[key] is not None]) else None) for key in keys}
-                measured = sum(r["trajectory_error_px"] is not None for r in frame_rows)
+                evaluated = [r for r in frame_rows if r["frame_index"] != k]
+                means = _aggregate(evaluated)
+                measured = sum(r["trajectory_error_px"] is not None for r in evaluated)
                 record.update(status="ok", frame_count=len(frames), exact_pixel_checks=checks,
-                              means=means, trajectory_measured_frames=measured, trajectory_total_frames=count,
+                              means=means, generated_only_means=means,
+                              generated_only_psnr_perfect_match_count=sum(r["psnr_perfect_match"] for r in evaluated),
+                              generated_only_psnr_mean_undefined_due_to_perfect_match=any(r["psnr_perfect_match"] for r in evaluated),
+                              breakdown_index_metrics=frame_rows[k - 1],
+                              evaluated_frame_count=len(evaluated), evaluated_frame_indices=[r["frame_index"] for r in evaluated],
+                              excluded_frame_indices=[k],
+                              trajectory_measured_frames=measured, trajectory_total_frames=len(evaluated),
                               backend_wall_seconds=manifest["backend_wall_seconds"],
                               inference_seconds=manifest.get("inference_seconds"),
                               peak_cuda_memory_bytes=manifest.get("peak_cuda_memory_bytes"),
@@ -72,15 +92,18 @@ def run_guided_benchmark(output="outputs/guided-breakdown-benchmark", categories
                 record["error"] = f"{type(exc).__name__}: {exc}"
             sequences.append(record)
     root.mkdir(parents=True, exist_ok=True)
-    fields = ("case_id", "method", "frame_index", "psnr_db", "ssim", "edge_f1", "chamfer_px", "trajectory_error_px")
+    fields = ("case_id", "method", "frame_index", "is_authoritative_breakdown", "psnr_perfect_match", "psnr_db", "ssim", "edge_f1", "chamfer_px", "trajectory_error_px")
     with (root / "frames.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
     (root / "results.json").write_text(json.dumps({"protocol": "oracle breakdown diagnostic v1", "count": count,
         "breakdown_position": k, "sequences": sequences, "frames": rows}, indent=2, allow_nan=False) + "\n")
-    lines = ["# Oracle breakdown diagnostic", "", "Ground-truth-derived D; no artist study or algorithm novelty claim.", "",
-             "| Case | Method | Status | PSNR dB | SSIM | Edge F1 | Chamfer px | Trajectory error px | Coverage | Wall s | Inference s | Peak CUDA bytes |",
+    lines = ["# Oracle breakdown diagnostic", "", "Ground-truth-derived D; no artist study or algorithm novelty claim.",
+             f"Generated-only paired means evaluate indices 1..{count} excluding breakdown index {k} for both methods ({count - 1} frames). Index {k} is reported separately in results.json; guided D is authoritative/oracle, not generated output.",
+             "PSNR mean is null when any evaluated frame is a perfect match (infinite PSNR); the perfect-match count is recorded in results.json.",
+             "Runtime is an operational diagnostic, not a fair speed comparison: endpoint-only invokes the backend once; guided invokes it twice. Backend wall time may include different model-loading behavior. Guided per-segment diagnostics in guided_breakdown.segments are authoritative.", "",
+             "| Case | Method | Status | Generated-only PSNR dB | Generated-only SSIM | Generated-only Edge F1 | Generated-only Chamfer px | Generated-only trajectory error px | Generated-only trajectory coverage | Backend wall s (diagnostic) | Inference s (diagnostic) | Peak CUDA bytes |",
              "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for r in sequences:
         m = r.get("means", {})
