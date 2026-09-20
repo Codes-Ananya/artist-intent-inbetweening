@@ -4,12 +4,20 @@ Milestone 1 is a local, deterministic Gradio prototype. It creates a crossfade b
 
 ## Setup and launch
 
-Use Python 3.10 and the existing `.venv`:
+Use Python 3.10 and the existing `.venv`. The verified GPU environment uses CUDA 12.6 PyTorch wheels on an RTX 4050 6GB. Install the GPU requirements first:
+
+```bash
+.venv/bin/python -m pip install -r requirements-gpu-cu126.txt
+```
+
+Then install the application requirements:
 
 ```bash
 .venv/bin/python -m pip install -r requirements.txt
 ./launch.sh
 ```
+
+`requirements-lock.txt` pins the verified application dependency environment for reproducibility; install it instead of `requirements.txt` when exact application versions are needed. PyTorch and CUDA are controlled separately by `requirements-gpu-cu126.txt`. The placeholder backend can run without PyTorch, but the GPU installation prepares later model integration.
 
 Open `http://127.0.0.1:7860`. To use another port: `GRADIO_SERVER_PORT=7861 ./launch.sh`. The app binds to loopback only. FFmpeg must be on `PATH`.
 
