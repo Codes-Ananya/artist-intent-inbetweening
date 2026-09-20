@@ -41,3 +41,28 @@ The user ran the corrected benchmark in a normal WSL shell with `python -m inbet
 RIFE peak CUDA allocation was 86,549,504 bytes in every case. After the first run, typical RIFE inference-loop time was approximately 0.35 seconds for six intermediate 256×256 frames. The first RIFE case took 2.100 seconds to load the model and 0.826 seconds for inference.
 
 On these synthetic diagnostics, RIFE strongly outperformed crossfade for small translation, large translation, articulated limb, and crossing limb. Improvements were modest or mixed for rigid rotation and squash/stretch. RIFE did not reliably encode animation intent: it was weak on curved arcs, hold-then-fast timing, and exaggeration. In the occlusion case, RIFE trajectory measurements covered only 3 of 6 intermediate frames, so that trajectory score needs cautious interpretation. These results are not evidence of performance on artist-created animation.
+
+## 2026-09-20: Milestone 4 guided breakdown diagnostic
+
+Implemented local orchestration that splits an `InterpolationBackend` run at an authoritative D, with exact saved-PNG checks for A, D and B. The Gradio tab compares endpoint-only and guided RIFE. The controlled benchmark derives D from ground truth for curved arc, hold-then-fast, exaggeration and occlusion. It is an oracle diagnostic, not an artist study, and splitting at D is not claimed as a novel algorithm. The intended research value is measuring intervention benefit and placement, then learning when and where artist input helps most. No cloud services, training or new model were used.
+
+Sandbox validation: application `pip check` and offline pinned-lock dry run passed; Python compilation passed; pytest passed 41 tests with 1 CUDA-dependent skip. The guided CPU crossfade diagnostic completed all four categories and both methods with exact authoritative frames and strict JSON. The existing crossfade sample and benchmark quick test passed. Gradio returned HTTP 200 on loopback port 7861; `git diff --check` and generated-output/weight ignore checks passed. CUDA was unavailable (`torch.cuda.is_available() == False`); the existing GPU benchmark smoke failed for that reason. No RIFE quality or GPU timing result is claimed for Milestone 4 until the separate normal-WSL smoke test runs.
+
+### Methodology correction
+
+Independent review found that the earlier guided benchmark aggregate included oracle index k for the guided method. The earlier v1 aggregates are superseded for quantitative interpretation; their values are not evidence for a paired comparison. The corrected primary means use indices 1..N excluding k for both methods, report k separately, and explicitly represent perfect PSNR. Runtime values remain operational diagnostics because guided invokes the backend twice and endpoint-only once, with potentially different model-loading behavior.
+
+Correction validation: compilation passed; full pytest passed 43 tests with 1 CUDA-dependent skip. The CPU guided crossfade benchmark completed all four cases for both methods; its JSON parsed with strict nonfinite rejection and every record used the same generated-only frame index. The sample export and quick crossfade baseline benchmark passed. Gradio startup returned HTTP 200 on loopback port 7861. `git diff --check` passed, and ignore checks covered generated outputs, RIFE weights, and the virtual environment. The GPU benchmark was not rerun in the restricted shell.
+
+### Corrected normal-WSL GPU benchmark, 2026-09-21
+
+The corrected local RIFE run at `outputs/guided-breakdown-benchmark-v2` completed all four procedural cases with both endpoint-only and guided methods successful. Primary metrics compare the identical generated indices `[1, 2, 4, 5, 6]` for both methods; oracle breakdown index 3 is excluded from both primary aggregates and reported separately. A, D and B passed exact-pixel checks. Peak CUDA allocation was 86,549,504 bytes. Cloud compute was not used.
+
+| Case | Guided PSNR gain | SSIM gain | Edge F1 gain | Chamfer reduction | Trajectory error reduction |
+|---|---:|---:|---:|---:|---:|
+| `curved_arc` | +0.83 dB | +0.012 | +0.246 | 68.9% | 81.1% |
+| `hold_then_fast` | +17.05 dB | +0.028 | +0.305 | 61.0% | 44.7% |
+| `exaggeration` | +1.81 dB | +0.020 | +0.394 | 71.4% | 73.7% |
+| `occlusion` | +7.12 dB | +0.028 | +0.184 | 74.2% | 66.3% |
+
+For `occlusion`, trajectory coverage improved from 3/5 endpoint-only frames to 5/5 guided frames; its trajectory error means therefore cover different numbers of measurable frames. These are procedural oracle-breakdown results. They do not establish performance with artist-created drawings or novelty. Runtime values are not used for method comparison because backend invocation and model-loading behavior differ. The earlier v1 aggregates are superseded by this corrected run.

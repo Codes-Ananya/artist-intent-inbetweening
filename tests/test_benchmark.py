@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+import runpy
 import time
 import numpy as np
 import pytest
@@ -60,14 +61,17 @@ def test_comparison_keeps_backend_failures_separate(tmp_path):
     assert result['crossfade']['manifest']['backend']=='deterministic_crossfade'
 
 
-def test_cli_entrypoints(tmp_path):
+def test_cli_entrypoints(tmp_path, monkeypatch):
     root=Path(__file__).resolve().parents[1]
     env={k:v for k,v in os.environ.items() if k!='PYTHONPATH'}
     help_result=subprocess.run([sys.executable,'-m','inbetween.benchmark','--help'],cwd=root,env=env,capture_output=True,text=True)
     assert help_result.returncode==0 and '--quick' in help_result.stdout
-    smoke=subprocess.run([sys.executable,'scripts/benchmark_smoke_test.py'],cwd=root,env=env,capture_output=True,text=True)
-    assert 'ModuleNotFoundError' not in smoke.stderr
-    assert smoke.returncode in (0,1)  # CUDA availability determines RIFE success.
+    calls=[]
+    monkeypatch.setattr(benchmark_module,'run_benchmark',lambda *args: calls.append(args) or [{'case_id':'synthetic','status':'ok'}])
+    with pytest.raises(SystemExit) as result:
+        runpy.run_path(str(root/'scripts/benchmark_smoke_test.py'),run_name='__main__')
+    assert result.value.code == 0
+    assert len(calls) == 1
 
 
 @pytest.mark.parametrize('missing',[(1,),(1,2)])

@@ -4,9 +4,10 @@ from pathlib import Path
 import gradio as gr
 from .diagnostics import collect
 from .run import create_run
-from .core import CrossfadeBackend
+from .core import CrossfadeBackend, load_keyframes
 from .rife import RifeBackend
 from .comparison import compare
+from .guided import create_guided_run, _validate
 from .benchmark_cases import CATEGORIES
 
 
@@ -50,6 +51,30 @@ def compare_ui(first,last,count,fps,ground_truth,benchmark_case):
         details={key:manifest.get(key) for key in ('backend','backend_version','backend_wall_seconds','inference_seconds','model_load_seconds','peak_cuda_memory_bytes','checkpoint_id','source_commit')}
         if 'metrics' in record: details['synthetic_or_supplied_ground_truth_metrics']=record['metrics']
         outputs.extend([manifest['exports']['gif'],[(p,f'Frame {i}') for i,p in enumerate(frames)],frames,manifest['exports']['gif'],manifest['exports']['mp4'],str(Path(frames[0]).parent.parent/'manifest.json'),details])
+    return outputs
+
+
+def guided_compare_ui(first, breakdown, last, count, position, fps):
+    if not first or not breakdown or not last:
+        raise gr.Error("Upload A, D and B PNG frames")
+    try:
+        if position != int(position) or count != int(count):
+            raise ValueError("Intermediate count and breakdown position must be integers")
+        count, position, fps = int(count), int(position), int(fps)
+        a, d = load_keyframes(first, breakdown)
+        _, b = load_keyframes(breakdown, last)
+        _validate(a, d, b, count, position)
+        endpoint = create_run(first, last, count, fps, "outputs/guided-comparison/endpoint", RifeBackend())
+        guided = create_guided_run(first, breakdown, last, count, position, fps,
+                                   "outputs/guided-comparison/guided", RifeBackend())
+    except (ValueError, RuntimeError) as exc:
+        raise gr.Error(str(exc)) from exc
+    outputs = []
+    for manifest in (endpoint, guided):
+        frames = manifest["frames"]
+        outputs.extend([manifest["exports"]["gif"], [(p, f"Frame {i}") for i, p in enumerate(frames)],
+                        frames, manifest["exports"]["gif"], manifest["exports"]["mp4"],
+                        str(Path(manifest["exports"]["png_sequence"]).parent / "manifest.json"), manifest])
     return outputs
 
 def build_app():
@@ -97,6 +122,30 @@ def build_app():
                         details=gr.JSON(label="Runtime, identity, VRAM, metrics or failure")
                         comparison_outputs.extend([gif,strip,png,gif_file,mp4_file,manifest_file,details])
             cbutton.click(compare_ui,[cfirst,clast,ccount,cfps,ctruth,ccase],comparison_outputs)
+        with gr.Tab("Artist-guided breakdown"):
+            gr.Markdown("Compare endpoint-only RIFE (A → B) with guided RIFE (A → D → B). A, D and B are authoritative PNG frames. The guided manifest reports exact pixel checks.")
+            with gr.Row():
+                gfirst = gr.File(label="Keyframe A", file_types=[".png"], type="filepath")
+                gbreakdown = gr.File(label="Breakdown D", file_types=[".png"], type="filepath")
+                glast = gr.File(label="Keyframe B", file_types=[".png"], type="filepath")
+            gcount = gr.Slider(1, 120, value=6, step=1, label="Intermediate frames N")
+            gposition = gr.Number(value=3, precision=0, label="Breakdown position k (1 to N)")
+            gfps = gr.Slider(1, 60, value=12, step=1, label="FPS")
+            gbutton = gr.Button("Compare endpoint-only and guided RIFE")
+            guided_outputs = []
+            with gr.Row():
+                for title in ("Endpoint-only RIFE", "Artist-guided RIFE"):
+                    with gr.Column():
+                        gr.Markdown(f"### {title}")
+                        animation = gr.Image(label="Animation", interactive=False)
+                        gallery = gr.Gallery(label="Frame-by-frame gallery", columns=4, height=200)
+                        png = gr.File(label="PNG sequence", file_count="multiple")
+                        gif = gr.File(label="GIF")
+                        mp4 = gr.File(label="MP4")
+                        manifest = gr.File(label="Manifest path and download")
+                        details = gr.JSON(label="Result, provenance and exact-frame status")
+                        guided_outputs.extend([animation, gallery, png, gif, mp4, manifest, details])
+            gbutton.click(guided_compare_ui, [gfirst, gbreakdown, glast, gcount, gposition, gfps], guided_outputs)
         gr.JSON(value=collect(), label="Current system diagnostics")
     return app
 
