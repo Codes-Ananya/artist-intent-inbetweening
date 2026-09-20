@@ -47,7 +47,7 @@ def compare_ui(first,last,count,fps,ground_truth,benchmark_case):
             continue
         manifest=record['manifest']
         frames=manifest['frames']
-        details={key:manifest.get(key) for key in ('backend','backend_version','inference_seconds','peak_cuda_memory_bytes','checkpoint_id','source_commit')}
+        details={key:manifest.get(key) for key in ('backend','backend_version','backend_wall_seconds','inference_seconds','model_load_seconds','peak_cuda_memory_bytes','checkpoint_id','source_commit')}
         if 'metrics' in record: details['synthetic_or_supplied_ground_truth_metrics']=record['metrics']
         outputs.extend([manifest['exports']['gif'],[(p,f'Frame {i}') for i,p in enumerate(frames)],frames,manifest['exports']['gif'],manifest['exports']['mp4'],str(Path(frames[0]).parent.parent/'manifest.json'),details])
     return outputs

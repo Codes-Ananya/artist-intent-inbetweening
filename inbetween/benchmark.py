@@ -20,7 +20,11 @@ def _landmark(image):
     # Dark-pixel centroid, diagnostic proxy for body motion (not an annotated joint).
     a=np.asarray(image.convert('L'))<80
     ys,xs=np.nonzero(a)
-    return (float(xs.mean()),float(ys.mean())) if len(xs) else (float('nan'),float('nan'))
+    return (float(xs.mean()),float(ys.mean())) if len(xs) else None
+
+
+def _finite_or_none(value):
+    return float(value) if value is not None and math.isfinite(value) else None
 
 
 def _visuals(folder, truth, frames, fps=12):
@@ -58,35 +62,37 @@ def run_benchmark(output='outputs/benchmark', categories=CATEGORIES, backends=('
                     raise ValueError('Endpoint pixel mismatch')
                 frame_rows=[]
                 for i in range(1,len(frames)-1):
-                    values=metrics(case.frames[i],frames[i])
+                    values={key:_finite_or_none(value) for key,value in metrics(case.frames[i],frames[i]).items()}
+                    observed=_landmark(frames[i])
+                    trajectory=_finite_or_none(trajectory_error([case.landmarks[i]],[observed])) if observed is not None else None
                     values.update(case_id=case.identifier,backend=backend_name,frame_index=i,timestamp=i/(count+1),endpoint_equal=endpoint_ok,
-                                  trajectory_error_px=trajectory_error([case.landmarks[i]],[_landmark(frames[i])]))
+                                  trajectory_error_px=trajectory)
                     frame_rows.append(values)
                 rows.extend(frame_rows)
                 visual=root/'visuals'/case.identifier/backend_name;visual.mkdir(parents=True,exist_ok=True)
                 _visuals(visual,case.frames,frames)
+                measured=[r['trajectory_error_px'] for r in frame_rows if r['trajectory_error_px'] is not None]
+                means={key:(float(np.mean(finite)) if (finite:=[r[key] for r in frame_rows if r[key] is not None]) else None) for key in ('psnr_db','ssim','edge_f1','chamfer_px')}
+                means['trajectory_error_px']=float(np.mean(measured)) if measured else None
                 record.update(status='ok',endpoint_equal=True,frame_count=len(frames),
-                              inference_seconds=manifest['inference_seconds'],peak_cuda_memory_bytes=manifest['peak_cuda_memory_bytes'],
+                              backend_wall_seconds=manifest['backend_wall_seconds'],inference_seconds=manifest['inference_seconds'],model_load_seconds=manifest.get('model_load_seconds'),peak_cuda_memory_bytes=manifest['peak_cuda_memory_bytes'],
                               backend_version=manifest['backend_version'],source_commit=manifest['source_commit'],
                               checkpoint_id=manifest['checkpoint_id'],checkpoint_sha256=manifest['checkpoint_sha256'],
                               manifest=str(Path(manifest['frames'][0]).parent.parent/'manifest.json'),
-                              means={key:float(np.mean([r[key] for r in frame_rows])) for key in ('psnr_db','ssim','edge_f1','chamfer_px','trajectory_error_px')})
+                              trajectory_measured_frames=len(measured),trajectory_missing_frames=len(frame_rows)-len(measured),means=means)
             except Exception as exc:
                 record['error']=f'{type(exc).__name__}: {exc}'
             sequences.append(record)
     fields=('case_id','backend','frame_index','timestamp','endpoint_equal','psnr_db','ssim','edge_f1','chamfer_px','trajectory_error_px')
     with (root/'frames.csv').open('w',newline='') as stream:
-        writer=csv.DictWriter(stream,fieldnames=fields);writer.writeheader();writer.writerows(rows)
-    def safe(value):
-        if isinstance(value,float) and not math.isfinite(value): return 'Infinity' if value>0 else 'NaN'
-        if isinstance(value,dict):return {k:safe(v) for k,v in value.items()}
-        if isinstance(value,list):return [safe(v) for v in value]
-        return value
-    (root/'results.json').write_text(json.dumps(safe({'protocol':'synthetic diagnostic v1','sequences':sequences,'frames':rows}),indent=2,allow_nan=False)+'\n')
-    lines=['# Synthetic diagnostic benchmark','', 'Procedural stress cases only; not evidence of artist performance.','', '| Case | Backend | Status | PSNR dB | SSIM | Edge F1 | Chamfer px | Runtime s | Peak VRAM bytes |','|---|---|---|---:|---:|---:|---:|---:|---:|']
+        writer=csv.DictWriter(stream,fieldnames=fields);writer.writeheader();writer.writerows([{k:'' if v is None else v for k,v in row.items()} for row in rows])
+    (root/'results.json').write_text(json.dumps({'protocol':'synthetic diagnostic v1','sequences':sequences,'frames':rows},indent=2,allow_nan=False)+'\n')
+    lines=['# Synthetic diagnostic benchmark','', 'Procedural stress cases only; not evidence of artist performance.','', 'Trajectory coverage counts intermediate frames with a finite dark-pixel centroid measurement. Missing values are shown as —.','', '| Case | Backend | Status | PSNR dB | SSIM | Edge F1 | Chamfer px | Trajectory error px | Trajectory coverage (measured/total) | Backend wall s | Inference loop s | Peak VRAM bytes |','|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
     for r in sequences:
         m=r.get('means',{})
-        lines.append('| '+ ' | '.join(str(x) for x in (r['case_id'],r['backend'],r['status'],round(m['psnr_db'],3) if m else '—',round(m['ssim'],3) if m else '—',round(m['edge_f1'],3) if m else '—',round(m['chamfer_px'],3) if m else '—',round(r['inference_seconds'],3) if m else '—',r.get('peak_cuda_memory_bytes') or '—'))+' |')
+        fmt=lambda value: round(value,3) if value is not None else '—'
+        coverage=f"{r['trajectory_measured_frames']}/{r['trajectory_measured_frames']+r['trajectory_missing_frames']}" if m else '—'
+        lines.append('| '+ ' | '.join(str(x) for x in (r['case_id'],r['backend'],r['status'],fmt(m.get('psnr_db')),fmt(m.get('ssim')),fmt(m.get('edge_f1')),fmt(m.get('chamfer_px')),fmt(m.get('trajectory_error_px')),coverage,fmt(r.get('backend_wall_seconds')),fmt(r.get('inference_seconds')),r.get('peak_cuda_memory_bytes') or '—'))+' |')
         if r['error']: lines.append(f"\nFailure: {r['case_id']} / {r['backend']}: {r['error']}\n")
     (root/'summary.md').write_text('\n'.join(lines)+'\n')
     return sequences

@@ -27,6 +27,7 @@ def create_run(first: str | Path, last: str | Path, intermediate_count: int, fps
     generation_seconds = time.perf_counter() - started
     backend_details = {"backend_version": getattr(backend, "version", "unknown"), "source_commit": None, "checkpoint_id": None, "checkpoint_sha256": None, "device": "cpu", "dtype": "uint8", "requested_intermediate_count": intermediate_count, "generated_intermediate_count": len(frames) - 2, "timestamps": [i / (intermediate_count + 1) for i in range(1, intermediate_count + 1)], "preprocessing": {"original_size": list(a.size), "working_size": list(a.size), "resize_method": "none", "padding": {"left": 0, "top": 0, "right": 0, "bottom": 0}, "alpha": "channel crossfade" if a.mode == "RGBA" else "none"}, "inference_seconds": generation_seconds, "peak_cuda_memory_bytes": None}
     backend_details.update(getattr(backend, "last_run_metadata", {}))
+    backend_details["backend_wall_seconds"] = generation_seconds
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid4().hex[:8]
     folder = Path(output_root) / run_id
     sequence = folder / "png_sequence"

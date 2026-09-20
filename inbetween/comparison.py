@@ -1,5 +1,6 @@
 """Independent two-baseline comparison runs."""
 from pathlib import Path
+import re
 from PIL import Image
 from .benchmark_cases import CATEGORIES, generate_assets
 from .benchmark_metrics import metrics, endpoint_equal
@@ -17,8 +18,18 @@ def compare(first=None,last=None,count=6,fps=12,ground_truth=None,benchmark_case
         last=Path(output)/'ground_truth'/benchmark_case/f'frame_{count+1:04d}.png'
         truth=case.frames
     elif ground_truth:
-        if len(ground_truth)!=count+2: raise ValueError('Complete ordered ground truth sequence required')
-        truth=[Image.open(p).copy() for p in sorted(ground_truth)]
+        if len(ground_truth)<3 or len(ground_truth)!=count+2:
+            raise ValueError('Ground truth requires at least three frames and exactly count + 2 frames')
+        paths=[Path(p) for p in ground_truth]
+        names=[p.name for p in paths]
+        if len(set(names))!=len(names): raise ValueError('Ground truth filenames must be unique')
+        matches=[re.fullmatch(r'(.*?)(\d+)(\.[Pp][Nn][Gg])',name) for name in names]
+        if any(m is None for m in matches) or len({(m.group(1),m.group(3).lower()) for m in matches})!=1:
+            raise ValueError('Ground truth ordering is ambiguous; use one filename prefix and numeric frame suffix')
+        numbers=[int(m.group(2)) for m in matches]
+        if len(set(numbers))!=len(numbers): raise ValueError('Ground truth frame numbers must be unique')
+        paths=[p for _,p in sorted(zip(numbers,paths))]
+        truth=[Image.open(p).copy() for p in paths]
         if any(im.size!=truth[0].size for im in truth): raise ValueError('Ground truth sizes differ')
         with Image.open(first) as first_image, Image.open(last) as last_image:
             if not endpoint_equal(first_image,truth[0]) or not endpoint_equal(last_image,truth[-1]):

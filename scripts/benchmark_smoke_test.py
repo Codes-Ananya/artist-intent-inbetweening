@@ -1,5 +1,8 @@
 """Run a tiny RIFE benchmark in a normal WSL GPU shell."""
 import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 from inbetween.benchmark import run_benchmark
 
 if __name__ == '__main__':

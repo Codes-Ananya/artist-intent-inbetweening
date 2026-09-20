@@ -66,4 +66,4 @@ The local synthetic diagnostic suite generates ten deterministic 256×256 line-a
 ./launch.sh
 ```
 
-The Gradio **Compare baselines** tab accepts two PNGs or a built-in benchmark case and runs both backends at matching timestamps. It offers both animations, frame strips, PNG sequences, GIFs, MP4s, manifests, runtime and VRAM. Upload an ordered complete ground-truth PNG sequence, including endpoints, to show metrics for your own sequence. A failed RIFE run is shown as failed. Reports and contact sheets are under the selected ignored `outputs/benchmark*/` directory.
+The Gradio **Compare baselines** tab accepts two PNGs or a built-in benchmark case and runs both backends at matching timestamps. It offers both animations, frame strips, PNG sequences, GIFs, MP4s, manifests, complete backend generation wall time, inference-loop time, and VRAM. Upload a complete ground-truth PNG sequence, including endpoints, with a shared filename prefix and numeric frame suffix to show metrics for your own sequence. A failed RIFE run is shown as failed. Reports and contact sheets are under the selected ignored `outputs/benchmark*/` directory.

@@ -67,6 +67,7 @@ class RifeBackend(InterpolationBackend):
         if source_path not in sys.path:
             sys.path.insert(0, source_path)
         try:
+            model_load_started = time.perf_counter()
             Model = importlib.import_module("model.RIFE").Model
             model = Model(arbitrary=True)
             state = torch.load(self.asset_root / CHECKPOINT_ID, map_location="cpu", weights_only=True)
@@ -74,6 +75,8 @@ class RifeBackend(InterpolationBackend):
             model.flownet.load_state_dict(state, strict=True)
             model.device()
             model.eval()
+            torch.cuda.synchronize()
+            self.last_model_load_seconds = time.perf_counter() - model_load_started
             def tensor(image):
                 array = np.asarray(image, dtype=np.float32).copy() / 255.0
                 value = torch.from_numpy(array.transpose(2, 0, 1)).unsqueeze(0).to("cuda:0")
@@ -103,6 +106,7 @@ class RifeBackend(InterpolationBackend):
             raise RifeError(f"RIFE inference failed: {exc}") from exc
 
     def generate(self, first: Image.Image, last: Image.Image, intermediate_count: int) -> list[Image.Image]:
+        self.last_model_load_seconds = None
         times = timestamps_for_count(intermediate_count)
         if first.size != last.size or first.mode != last.mode or first.mode not in ("RGB", "RGBA"):
             raise ValidationError("Keyframes must have matching size and RGB/RGBA mode")
@@ -127,4 +131,6 @@ class RifeBackend(InterpolationBackend):
         else:
             preprocessing["alpha"] = "none"
         self.last_run_metadata = {"backend_version": self.version, "source_commit": SOURCE_COMMIT, "checkpoint_id": CHECKPOINT_ID, "checkpoint_sha256": CHECKPOINT_SHA256, "device": "cuda:0", "dtype": "float32", "requested_intermediate_count": intermediate_count, "generated_intermediate_count": len(images), "timestamps": times, "preprocessing": preprocessing, "inference_seconds": seconds, "peak_cuda_memory_bytes": peak}
+        if self.last_model_load_seconds is not None:
+            self.last_run_metadata["model_load_seconds"] = self.last_model_load_seconds
         return [first.copy(), *images, last.copy()]
