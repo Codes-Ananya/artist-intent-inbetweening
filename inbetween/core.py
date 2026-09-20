@@ -43,6 +43,7 @@ class InterpolationBackend(ABC):
 
 class CrossfadeBackend(InterpolationBackend):
     name = "deterministic_crossfade"
+    version = "1"
 
     def generate(self, first: Image.Image, last: Image.Image, intermediate_count: int) -> list[Image.Image]:
         if not isinstance(intermediate_count, int) or not 0 <= intermediate_count <= 120:

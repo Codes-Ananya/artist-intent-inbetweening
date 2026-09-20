@@ -15,3 +15,10 @@ models/weights/
 *.onnx
 *.log
 .vscode/
+.local/
+vendor/
+third_party/
+*.zip
+*.tar
+*.tar.gz
+*.part
