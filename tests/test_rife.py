@@ -2,7 +2,9 @@ import io
 from pathlib import Path
 import numpy as np
 import pytest
+import gradio as gr
 from PIL import Image
+from inbetween import app as app_module
 from inbetween.app import select_backend
 from inbetween.core import CrossfadeBackend
 from inbetween.rife import RifeBackend, RifeError, timestamps_for_count
@@ -79,6 +81,54 @@ def test_backend_failure_does_not_fallback(tmp_path, monkeypatch):
     with pytest.raises(RifeError, match="model failed"):
         create_run(first, last, 1, output_root=tmp_path / "out", backend=backend)
     assert not (tmp_path / "out").exists()
+
+
+def test_out_of_memory_raises_clear_rife_error(tmp_path, monkeypatch):
+    import torch
+    backend = RifeBackend(tmp_path)
+    monkeypatch.setattr(backend, "_require_assets_and_cuda", lambda: (torch, tmp_path))
+
+    class FakeFlownet:
+        def load_state_dict(self, state, strict=True):
+            pass
+
+    class FakeModel:
+        def __init__(self, arbitrary=True):
+            self.flownet = FakeFlownet()
+
+        def device(self):
+            pass
+
+        def eval(self):
+            pass
+
+        def inference(self, a, b, timestep):
+            raise torch.cuda.OutOfMemoryError("CUDA out of memory: fake allocation failure")
+
+    fake_module = type("FakeRifeModule", (), {"Model": FakeModel})
+    monkeypatch.setattr("inbetween.rife.importlib.import_module", lambda name: fake_module)
+    monkeypatch.setattr(torch, "load", lambda *a, **k: {})
+    with pytest.raises(RifeError, match="ran out of GPU memory"):
+        backend.generate(Image.new("RGB", (8, 8)), Image.new("RGB", (8, 8)), 1)
+
+
+def test_ui_error_does_not_substitute_crossfade_backend(monkeypatch):
+    def fail_create_run(*args, **kwargs):
+        raise RifeError("model failed")
+
+    monkeypatch.setattr(app_module, "create_run", fail_create_run)
+    selected = []
+    real_select_backend = select_backend
+
+    def tracking_select_backend(label):
+        backend = real_select_backend(label)
+        selected.append(type(backend))
+        return backend
+
+    monkeypatch.setattr(app_module, "select_backend", tracking_select_backend)
+    with pytest.raises(gr.Error):
+        app_module.generate("first.png", "last.png", 1, 12, backend_label="RIFE local AI baseline")
+    assert selected == [RifeBackend]
 
 
 def test_setup_checksum_and_download(tmp_path, monkeypatch):
