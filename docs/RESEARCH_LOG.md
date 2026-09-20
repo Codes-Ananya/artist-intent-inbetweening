@@ -32,4 +32,12 @@ Implemented a reproducible local procedural suite for ten motion stress categori
 
 `pip check` and `compileall` passed. Pytest: 22 passed, 1 skipped (the existing mocked RIFE OOM test requires CUDA before reaching the mock). The full six-intermediate crossfade benchmark completed all 10 cases (60 intermediate comparisons) with exact endpoints, and produced reports and visuals under `outputs/benchmark-full/`. CUDA was unavailable in this sandbox (`torch.cuda.is_available() == False`). Gradio returned HTTP 200 on localhost port 7861. Ignore checks confirmed benchmark reports and images stay untracked.
 
-The first normal-WSL GPU benchmark completed all 20 case/backend combinations with exact endpoints. RIFE inference-loop times were approximately 0.20–0.64 seconds, and peak VRAM was 86,549,504 bytes. This run was provisional: two trajectory sequence aggregates were missing and report handling required correction. Corrected results must be regenerated before Milestone 3 acceptance; the original report must not be treated as an accepted result.
+The first normal-WSL GPU benchmark completed all 20 case/backend combinations with exact endpoints. RIFE inference-loop times were approximately 0.20–0.64 seconds, and peak VRAM was 86,549,504 bytes. This run was provisional: two trajectory sequence aggregates were missing and report handling required correction. The original report was not accepted; the corrected rerun is recorded below.
+
+### Corrected normal-WSL GPU benchmark, 2026-09-20
+
+The user ran the corrected benchmark in a normal WSL shell with `python -m inbetween.benchmark --backends crossfade rife --output outputs/benchmark-full-v2`. The local result directory `outputs/benchmark-full-v2` is ignored by Git. All ten procedural cases completed for both backends: 20 successful case/backend runs. Every sequence preserved both endpoint frames exactly. Cloud compute was not used.
+
+RIFE peak CUDA allocation was 86,549,504 bytes in every case. After the first run, typical RIFE inference-loop time was approximately 0.35 seconds for six intermediate 256×256 frames. The first RIFE case took 2.100 seconds to load the model and 0.826 seconds for inference.
+
+On these synthetic diagnostics, RIFE strongly outperformed crossfade for small translation, large translation, articulated limb, and crossing limb. Improvements were modest or mixed for rigid rotation and squash/stretch. RIFE did not reliably encode animation intent: it was weak on curved arcs, hold-then-fast timing, and exaggeration. In the occlusion case, RIFE trajectory measurements covered only 3 of 6 intermediate frames, so that trajectory score needs cautious interpretation. These results are not evidence of performance on artist-created animation.
