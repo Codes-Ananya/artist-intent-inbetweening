@@ -7,3 +7,7 @@ Frames are retained as PIL RGB/RGBA images. Source endpoint pixel arrays are cop
 ## Milestone 2 RIFE adapter
 
 `inbetween/rife.py` implements `InterpolationBackend` and loads the pinned official source and checkpoint from ignored `.local/rife/`. It sends equally spaced arbitrary timestamps directly to RIFE_m. The uploaded endpoints are copied into the returned sequence; only intermediate frames are model-generated. The adapter checks source commit and checkpoint hash, requires CUDA, uses `torch.inference_mode()` and float32, and reports memory and inference time. It does not call the crossfade backend on error. The run orchestrator merges backend metadata into each manifest. Setup and normal-shell GPU smoke scripts live in `scripts/`.
+
+## Milestone 3 benchmark
+
+`benchmark_cases.py` draws complete deterministic RGB character sequences. `benchmark_metrics.py` computes fixed grayscale and edge metrics. `benchmark.py` calls the unchanged backends through `create_run`, checks endpoints, isolates failures, and writes CSV, JSON, summary, contact sheets and GIFs. `comparison.py` runs independent backend manifests for the Gradio comparison tab. Generated assets live under ignored `outputs/`.

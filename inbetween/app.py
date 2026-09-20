@@ -6,6 +6,8 @@ from .diagnostics import collect
 from .run import create_run
 from .core import CrossfadeBackend
 from .rife import RifeBackend
+from .comparison import compare
+from .benchmark_cases import CATEGORIES
 
 
 def select_backend(label: str):
@@ -34,6 +36,22 @@ def show_frame(index, gallery):
     return gallery[int(index)][0]
 
 
+
+def compare_ui(first,last,count,fps,ground_truth,benchmark_case):
+    result=compare(first,last,int(count),int(fps),ground_truth,benchmark_case or None)
+    outputs=[]
+    for name in ('crossfade','rife'):
+        record=result[name]
+        if record['status']!='ok':
+            outputs.extend([None,[],[],None,None,None,record['error']])
+            continue
+        manifest=record['manifest']
+        frames=manifest['frames']
+        details={key:manifest.get(key) for key in ('backend','backend_version','backend_wall_seconds','inference_seconds','model_load_seconds','peak_cuda_memory_bytes','checkpoint_id','source_commit')}
+        if 'metrics' in record: details['synthetic_or_supplied_ground_truth_metrics']=record['metrics']
+        outputs.extend([manifest['exports']['gif'],[(p,f'Frame {i}') for i,p in enumerate(frames)],frames,manifest['exports']['gif'],manifest['exports']['mp4'],str(Path(frames[0]).parent.parent/'manifest.json'),details])
+    return outputs
+
 def build_app():
     with gr.Blocks(title="Animation In-Betweening MVP") as app:
         gr.Markdown("# Animation In-Betweening MVP\nUpload two matching RGB or RGBA PNG keyframes. Choose a deterministic crossfade or optional local RIFE baseline. RIFE requires installed assets and CUDA.")
@@ -55,6 +73,30 @@ def build_app():
         manifest_json = gr.JSON(label="Run details and CUDA diagnostics")
         button.click(generate, [first, last, count, fps, backend_choice], [gallery, index, viewer, playback, mp4, pngs, manifest_file, manifest_json])
         index.change(show_frame, [index, gallery], viewer)
+        with gr.Tab("Compare baselines"):
+            gr.Markdown("Both backends use the same endpoints and timestamps. Metrics appear only with a complete ground truth sequence or a built-in synthetic case. No quality ranking is implied for uploads without ground truth.")
+            with gr.Row():
+                cfirst=gr.File(label="Start PNG",file_types=[".png"],type="filepath")
+                clast=gr.File(label="End PNG",file_types=[".png"],type="filepath")
+            ccase=gr.Dropdown(["",*CATEGORIES],value="",label="Built-in synthetic case (optional)")
+            ctruth=gr.File(label="Complete ordered ground truth PNGs (optional)",file_types=[".png"],type="filepath",file_count="multiple")
+            ccount=gr.Slider(1,120,value=6,step=1,label="Intermediate frames")
+            cfps=gr.Slider(1,60,value=12,step=1,label="FPS")
+            cbutton=gr.Button("Compare")
+            comparison_outputs=[]
+            with gr.Row():
+                for title in ("Crossfade","RIFE"):
+                    with gr.Column():
+                        gr.Markdown(f"### {title}")
+                        gif=gr.Image(label="Animation",interactive=False)
+                        strip=gr.Gallery(label="Synchronized frame strip",columns=4,height=200)
+                        png=gr.File(label="PNG sequence",file_count="multiple")
+                        gif_file=gr.File(label="GIF")
+                        mp4_file=gr.File(label="MP4")
+                        manifest_file=gr.File(label="Manifest")
+                        details=gr.JSON(label="Runtime, identity, VRAM, metrics or failure")
+                        comparison_outputs.extend([gif,strip,png,gif_file,mp4_file,manifest_file,details])
+            cbutton.click(compare_ui,[cfirst,clast,ccount,cfps,ctruth,ccase],comparison_outputs)
         gr.JSON(value=collect(), label="Current system diagnostics")
     return app
 

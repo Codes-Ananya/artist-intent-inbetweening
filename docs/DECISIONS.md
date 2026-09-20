@@ -11,3 +11,11 @@
 8. Arbitrary requested counts map directly to timestamps `i/(N+1)`; no recursive bisection or frame duplication is needed.
 9. RIFE inference uses float32 and CUDA. FP16 is postponed pending normal-shell stability testing. A 512×512 working area budget limits memory; preprocessing is recorded in manifests.
 10. RIFE sees RGB composited over white for RGBA uploads. Alpha is interpolated linearly and original endpoints remain untouched.
+
+## Milestone 3 decisions
+
+- Use 256×256 deterministic RGB procedural line art to bound local CPU/GPU cost; no external dataset or new model.
+- Retain RIFE and crossfade implementations unchanged. Reuse run manifests for model identity, runtime, and peak VRAM.
+- Use OpenCV's precise Euclidean distance transform and fixed Canny thresholds for reproducible contour diagnostics.
+- Report trajectory through an annotated body-center versus output dark-pixel centroid proxy; it can be biased by pose and occlusion.
+- Keep benchmark outputs under ignored `outputs/`; do not rank user uploads without complete ground truth.

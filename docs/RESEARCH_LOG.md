@@ -23,3 +23,21 @@ Sandbox validation after implementation: `pip check` reported no broken requirem
 Ran the RIFE smoke test and a Gradio UI generation in the normal WSL shell (outside the Codex sandbox) on the RTX 4050 Laptop GPU. `torch.cuda.is_available()` was `True`, GPU: "NVIDIA GeForce RTX 4050 Laptop GPU, 6GB". RIFE source verified against the official [hzwer/ECCV2022-RIFE](https://github.com/hzwer/ECCV2022-RIFE) repository at pinned commit `5d8adbdd40e12c2c8f91930eff838aebe561c086`; checkpoint SHA-256 `9f9e2e8b5c3fef311c9a782aa17a30f87c388ce6dc9c00e4993eba3d3941d3cb`. The run produced four total frames (the two uploaded endpoints plus two generated intermediates); inference took 0.528 seconds with peak CUDA memory of 66.1 MiB. Endpoint frames compared pixel-exact against the uploaded source PNGs. The Gradio UI completed a RIFE generation successfully. No cloud compute was used at any point.
 
 These measurements apply only to the synthetic smoke-test images used for this run and are not general performance claims about typical animation frames, resolutions, or frame counts.
+
+## Milestone 3 controlled diagnostic
+
+Implemented a reproducible local procedural suite for ten motion stress categories. This is an implementation check, not a study of natural hand-drawn animation or artist preference. PSNR/SSIM may penalize valid alternative motion; edge scores depend on alignment and line width; smoothness is not inherently desirable. Publication claims require review and permissioned artist data. Benchmark commands and metric definitions are in `BENCHMARK_PROTOCOL.md` and `METRICS.md`.
+
+### Codex validation, 2026-09-20
+
+`pip check` and `compileall` passed. Pytest: 22 passed, 1 skipped (the existing mocked RIFE OOM test requires CUDA before reaching the mock). The full six-intermediate crossfade benchmark completed all 10 cases (60 intermediate comparisons) with exact endpoints, and produced reports and visuals under `outputs/benchmark-full/`. CUDA was unavailable in this sandbox (`torch.cuda.is_available() == False`). Gradio returned HTTP 200 on localhost port 7861. Ignore checks confirmed benchmark reports and images stay untracked.
+
+The first normal-WSL GPU benchmark completed all 20 case/backend combinations with exact endpoints. RIFE inference-loop times were approximately 0.20–0.64 seconds, and peak VRAM was 86,549,504 bytes. This run was provisional: two trajectory sequence aggregates were missing and report handling required correction. The original report was not accepted; the corrected rerun is recorded below.
+
+### Corrected normal-WSL GPU benchmark, 2026-09-20
+
+The user ran the corrected benchmark in a normal WSL shell with `python -m inbetween.benchmark --backends crossfade rife --output outputs/benchmark-full-v2`. The local result directory `outputs/benchmark-full-v2` is ignored by Git. All ten procedural cases completed for both backends: 20 successful case/backend runs. Every sequence preserved both endpoint frames exactly. Cloud compute was not used.
+
+RIFE peak CUDA allocation was 86,549,504 bytes in every case. After the first run, typical RIFE inference-loop time was approximately 0.35 seconds for six intermediate 256×256 frames. The first RIFE case took 2.100 seconds to load the model and 0.826 seconds for inference.
+
+On these synthetic diagnostics, RIFE strongly outperformed crossfade for small translation, large translation, articulated limb, and crossing limb. Improvements were modest or mixed for rigid rotation and squash/stretch. RIFE did not reliably encode animation intent: it was weak on curved arcs, hold-then-fast timing, and exaggeration. In the occlusion case, RIFE trajectory measurements covered only 3 of 6 intermediate frames, so that trajectory score needs cautious interpretation. These results are not evidence of performance on artist-created animation.
