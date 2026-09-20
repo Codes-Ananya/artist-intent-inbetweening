@@ -11,3 +11,7 @@ Frames are retained as PIL RGB/RGBA images. Source endpoint pixel arrays are cop
 ## Milestone 3 benchmark
 
 `benchmark_cases.py` draws complete deterministic RGB character sequences. `benchmark_metrics.py` computes fixed grayscale and edge metrics. `benchmark.py` calls the unchanged backends through `create_run`, checks endpoints, isolates failures, and writes CSV, JSON, summary, contact sheets and GIFs. `comparison.py` runs independent backend manifests for the Gradio comparison tab. Generated assets live under ignored `outputs/`.
+
+## Milestone 4 guided orchestration
+
+`guided.py` wraps any `InterpolationBackend` with two segment calls. It copies A, D and B into indices 0, k and N+1 and checks their pixels. `create_guided_run` reuses `create_run` exports and adds breakdown source hash, segment diagnostics, authoritative indices and saved-PNG checks to the manifest. `guided_benchmark.py` evaluates four oracle-breakdown cases independently, recording failures without fallback. The existing endpoint-only path remains unchanged.

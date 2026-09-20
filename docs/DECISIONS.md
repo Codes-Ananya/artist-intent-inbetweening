@@ -19,3 +19,10 @@
 - Use OpenCV's precise Euclidean distance transform and fixed Canny thresholds for reproducible contour diagnostics.
 - Report trajectory through an annotated body-center versus output dark-pixel centroid proxy; it can be biased by pose and occlusion.
 - Keep benchmark outputs under ignored `outputs/`; do not rank user uploads without complete ground truth.
+
+## Milestone 4 decisions
+
+- Treat the supplied breakdown D as an authoritative drawing at index k, alongside A and B. The guided output has N+2 frames and one copy of D.
+- Orchestrate two calls through `InterpolationBackend`; keep RIFE internals and endpoint-only behavior unchanged. Never fall back to crossfade after failure.
+- Use ground-truth-derived D for a controlled oracle diagnostic, not as evidence from artists. Splitting around D is not a novel algorithm claim; measuring intervention benefit and placement is the research goal.
+- Keep all execution and assets local, without cloud services or training.

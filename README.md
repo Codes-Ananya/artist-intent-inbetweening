@@ -67,3 +67,15 @@ The local synthetic diagnostic suite generates ten deterministic 256×256 line-a
 ```
 
 The Gradio **Compare baselines** tab accepts two PNGs or a built-in benchmark case and runs both backends at matching timestamps. It offers both animations, frame strips, PNG sequences, GIFs, MP4s, manifests, complete backend generation wall time, inference-loop time, and VRAM. Upload a complete ground-truth PNG sequence, including endpoints, with a shared filename prefix and numeric frame suffix to show metrics for your own sequence. A failed RIFE run is shown as failed. Reports and contact sheets are under the selected ignored `outputs/benchmark*/` directory.
+
+## Milestone 4: artist-guided breakdown experiment
+
+The **Artist-guided breakdown** tab compares endpoint-only RIFE with RIFE split around an uploaded breakdown D. For N intermediate positions, set `k` from 1 to N: A is frame 0, D is frame k, and B is frame N+1. The output has N+2 frames; A, D and B are authoritative and pixel-exact in the PNG sequence. The tab provides paired playback, frame galleries, PNG sequences, GIF and MP4 downloads, manifests, runtime details and exact-frame status. Both methods require the local RIFE assets and CUDA; a failure is shown without substituting crossfade.
+
+The controlled oracle-breakdown diagnostic uses four existing synthetic cases and ground-truth-derived D. It is not an artist study. See [guided protocol](docs/GUIDED_BREAKDOWN_PROTOCOL.md).
+
+```bash
+.venv/bin/python -m inbetween.guided_benchmark --backend rife --output outputs/guided-breakdown-benchmark
+```
+
+In a normal WSL shell with CUDA and the pinned local RIFE assets, run `.venv/bin/python scripts/guided_rife_smoke_test.py` for a small GPU acceptance check.

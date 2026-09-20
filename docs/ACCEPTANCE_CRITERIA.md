@@ -25,3 +25,10 @@
 - Per-frame CSV, JSON, Markdown summary, contact sheets and comparison GIFs; generated files ignored.
 - Gradio comparison with independent exports and metrics only when complete ground truth is present.
 - Run pip check, compileall, pytest, crossfade benchmark, conditional CUDA RIFE benchmark, HTTP startup, diff and ignore checks.
+
+## Milestone 4
+
+- Guided timeline: N+2 frames, D at k, segment counts k-1 and N-k, exact authoritative A/D/B PNG pixels.
+- Paired Gradio endpoint-only and guided RIFE exports and manifest diagnostics; failures surface without fallback.
+- Four controlled oracle-breakdown categories with identical frame counts, metric coverage, strict JSON and isolated failures.
+- CPU fake-backend tests and normal-WSL CUDA smoke command. Generated assets remain ignored.
