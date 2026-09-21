@@ -49,3 +49,19 @@ Milestone 5 is closed as an initial procedural negative result; see
 Flat improvements use `psnr_db_gain`, `ssim_gain`, `edge_f1_gain`,
 `chamfer_px_reduction`, and `trajectory_error_px_reduction`; absolute metrics
 retain their names. The UI requires manual k and cannot adopt the diagnostic.
+
+## Milestone 6 preregistration
+
+- Preserve Milestone 5's negative baseline byte-for-byte; use its corrected
+  generated-only ranking and paired trajectory coverage unchanged.
+- Freeze ten new object/motion constructions and explicit intent records in
+  [INTENT_GUIDANCE_PROTOCOL.md](INTENT_GUIDANCE_PROTOCOL.md) before GPU evaluation.
+- Use normalized candidate time k/(N+1), fixed early/middle/late phase boundaries,
+  representatives 2/3/5 at N=6, and deterministic ambiguity abstention.
+- Abstention is not calibrated confidence, predicted RIFE failure or midpoint
+  fallback. Forced-choice intent is a separate ablation. Compare policies on
+  identical evaluable cases within each explicitly labelled subset.
+- Keep the UI unchanged and manual k authoritative. Use a separate local study
+  runner, no training/new model/dependency, and CPU-safe tests. Source hashes and
+  intent decisions are saved before inference; reject endpoint collisions.
+- Simple mapping is an elicitation diagnostic, not the final research contribution.

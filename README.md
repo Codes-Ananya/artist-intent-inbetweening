@@ -105,3 +105,26 @@ Preserve the original GPU artifacts. A CPU implementation check can use:
 
 Flat improvements have explicit gain/reduction field names; absolute frame
 metrics remain separate. No heuristic tuning or post-hoc correction was evaluated.
+
+## Milestone 6: preregistered intent guidance with abstention
+
+The separate [Milestone 6 protocol](docs/INTENT_GUIDANCE_PROTOCOL.md) freezes ten
+new procedural cases and a small explicit temporal-intent mapping. Abstention
+handles ambiguous intent deterministically; it is not calibrated confidence.
+Selective answered-subset comparisons and full-suite forced-choice ablation
+results are reported separately. The Milestone 5 heuristic and UI are unchanged;
+manual k remains authoritative. This is not a final research contribution.
+
+CPU implementation validation (use a fresh output directory):
+
+```bash
+.venv/bin/python -m inbetween.intent_study --backend crossfade --output outputs/intent-guidance-cpu-v1
+```
+
+Later, separately in normal WSL with the local RTX 4050 and pinned RIFE assets:
+
+```bash
+.venv/bin/python -m inbetween.intent_study --backend rife --output outputs/intent-guidance-rife-v1
+```
+
+The preregistered implementation includes no Milestone 6 GPU effectiveness result.

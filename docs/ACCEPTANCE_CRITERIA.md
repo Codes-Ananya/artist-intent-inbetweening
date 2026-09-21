@@ -45,3 +45,19 @@
 - UI research diagnostic with manual k required; no adoption action or fallback.
 - CPU fake-backend tests, unchanged Milestone 1–4 tests, local regressions and HTTP check.
 - Closed negative normal-WSL result: 24/24 candidates, 0/4 heuristic oracle selections; CPU validation is not GPU quality evidence.
+
+## Milestone 6 preregistered implementation
+
+- [x] Clean main, HEAD and peeled Milestone 5 tag verified at required base commit;
+  work isolated on feature/intent-guidance-abstention.
+- [x] Ten distinct held-out constructions, equations/geometry/intent records and
+  null seeds documented before GPU evaluation; endpoint hash collisions rejected.
+- [x] Fixed N=6 phase mapping and deterministic ambiguity abstention; separately
+  labelled forced-choice ablation; no silent midpoint substitution.
+- [x] One endpoint run and six independent one-breakdown candidates per case;
+  exact saved A/D/B and corrected frozen Milestone 5 rank/regret protocol.
+- [x] Strict JSON/CSV/Markdown with explicit subset IDs, shared policy comparison
+  subsets, coverage, completeness, reasons, per-case metrics and failure records.
+- [x] CPU-safe fake-backend tests; existing real-model import guard retained;
+  Milestone 1-5 behavior and manual UI authority unchanged.
+- [ ] Separate normal-WSL RTX 4050 study. No Milestone 6 GPU result claimed.
