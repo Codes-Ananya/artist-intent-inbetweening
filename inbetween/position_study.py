@@ -15,6 +15,17 @@ from .run import create_run
 from .position_recommendation import recommend_position
 
 SEED = 20260921
+IMPROVEMENT_FIELDS = {
+    "psnr_db": "psnr_db_gain", "ssim": "ssim_gain", "edge_f1": "edge_f1_gain",
+    "chamfer_px": "chamfer_px_reduction", "trajectory_error_px": "trajectory_error_px_reduction",
+}
+
+
+def flat_improvements(candidate):
+    """Explicit directions in flat reports; nested absolute metrics stay unchanged."""
+    return {field: candidate.get('improvement', {}).get(key)
+            for key, field in IMPROVEMENT_FIELDS.items()}
+
 
 
 def midpoint(count):
@@ -58,7 +69,7 @@ def policy_comparison(candidates, recommendation, oracle, count):
         value = candidate.get('mean_rank')
         rows.append({'policy': policy, 'k': k, 'status': candidate.get('status', 'unavailable'),
                      'mean_rank': value, 'regret': value-best if value is not None and best is not None else None,
-                     **candidate.get('improvement', {})})
+                     **flat_improvements(candidate)})
     return rows
 
 
@@ -158,7 +169,7 @@ def run_position_study(output='outputs/breakdown-position-study', backend='rife'
         report['policies'] = policy_comparison(report['candidates'], report['recommendation'], report['oracle'], count)
         flat_candidates.extend({'case_id': category, 'k': r['k'], 'status': r['status'], 'error': r['error'],
                                 'mean_rank': r['mean_rank'], 'guided_wall_seconds': r.get('backend_wall_seconds'),
-                                **r.get('improvement', {})} for r in report['candidates'])
+                                **flat_improvements(r)} for r in report['candidates'])
         flat_policies.extend({'case_id': category, **r} for r in report['policies'])
     root.mkdir(parents=True, exist_ok=True)
     result = {'protocol': 'BREAKDOWN_POSITION_PROTOCOL v1', 'backend': backend, 'count': count, 'random_seed': SEED, 'cases': reports}
@@ -167,7 +178,9 @@ def run_position_study(output='outputs/breakdown-position-study', backend='rife'
     write_table(root/'policy_comparison.csv', flat_policies)
     lines = ['# Procedural oracle-position study', '',
              'Matched leave-one-position-out estimates: both methods exclude k; different k exclude different frames.',
-             'Oracle drawings estimate an upper bound. No real-artist usability conclusion. Experimental ground-truth-free heuristic.',
+             'Oracle drawings estimate an upper bound. No real-artist usability conclusion. Research diagnostic only; heuristic v1 failed the initial RIFE procedural study.',
+             'Two distinct endpoint-input configurations; four intended motion sequences. curved_arc, hold_then_fast and exaggeration share identical endpoints.',
+             'Flat improvements use gain/reduction suffixes; nested improvement keys retain v1 names. Absolute frame and breakdown-index metrics are separate.',
              'Runtime is diagnostic only; endpoint generation is recorded separately. No cloud compute. Milestone 4 v1 aggregates excluded.',
              'Primary criterion: lower mean rank of structural gains; trajectory only with complete paired coverage for every candidate.', '']
     for report in reports:

@@ -11,17 +11,19 @@ from .guided import create_guided_run, _validate
 from .benchmark_cases import CATEGORIES
 
 
-def recommend_ui(first, last, count):
+def analyze_position_ui(first, last, count):
     from .position_recommendation import recommend_position
     from .position_study import read_frames
     try:
         if not first or not last:
-            raise ValueError("Upload A and B before requesting a recommendation")
+            raise ValueError("Upload A and B before analyzing experimental position risk")
         if not 1 <= int(count) <= 120:
-            raise ValueError("Recommendation requires 1–120 intermediate positions")
+            raise ValueError("Risk analysis requires 1–120 intermediate positions")
         manifest = create_run(first, last, int(count), backend=RifeBackend())
         result = recommend_position(read_frames(manifest))
-        return result["recommended_k"], result, manifest["exports"]["gif"]
+        highest = result.pop("recommended_k")
+        result["experimental_highest_risk_position"] = highest
+        return highest, result, manifest["exports"]["gif"]
     except (ValueError, RuntimeError) as exc:
         raise gr.Error(str(exc)) from exc
 
@@ -73,6 +75,8 @@ def guided_compare_ui(first, breakdown, last, count, position, fps):
     if not first or not breakdown or not last:
         raise gr.Error("Upload A, D and B PNG frames")
     try:
+        if position is None:
+            raise ValueError("Choose breakdown position k manually before comparing")
         if position != int(position) or count != int(count):
             raise ValueError("Intermediate count and breakdown position must be integers")
         count, position, fps = int(count), int(position), int(fps)
@@ -144,15 +148,14 @@ def build_app():
                 gbreakdown = gr.File(label="Breakdown D", file_types=[".png"], type="filepath")
                 glast = gr.File(label="Keyframe B", file_types=[".png"], type="filepath")
             gcount = gr.Slider(1, 120, value=6, step=1, label="Intermediate frames N")
-            gposition = gr.Number(value=3, precision=0, label="Breakdown position k (1 to N)")
-            gr.Markdown("Experimental position heuristic: uses only A, B and endpoint-only RIFE frames. Generate a suggestion, then adopt it or type your own k above and upload one breakdown D. This is not a learned model or an artist-validated recommendation.")
-            recommend_button = gr.Button("Suggest a breakdown position from A and B")
-            recommended = gr.Number(label="Recommended k", interactive=False, precision=0)
+            gposition = gr.Number(value=None, precision=0, label="Manually choose breakdown position k (1 to N)")
+            gr.Markdown("Research diagnostic only. In the initial procedural study this heuristic performed worse than midpoint and seeded random and should not be treated as a recommendation")
+            gr.Markdown("Inspect the scores, then manually enter k above and upload D at that position. Seeded random refers to one deterministic baseline, not random chance generally.")
+            analyze_button = gr.Button("Analyze experimental position risk")
+            highest_risk = gr.Number(label="Experimental highest-risk position", interactive=False, precision=0)
             risks = gr.JSON(label="Risk score and components for every position")
             endpoint_preview = gr.Image(label="Endpoint-only preview", interactive=False)
-            adopt = gr.Button("Adopt recommended k (editable above)")
-            recommend_button.click(recommend_ui, [gfirst, glast, gcount], [recommended, risks, endpoint_preview])
-            adopt.click(lambda k: k, [recommended], [gposition])
+            analyze_button.click(analyze_position_ui, [gfirst, glast, gcount], [highest_risk, risks, endpoint_preview])
             gfps = gr.Slider(1, 60, value=12, step=1, label="FPS")
             gbutton = gr.Button("Compare endpoint-only and guided RIFE")
             guided_outputs = []

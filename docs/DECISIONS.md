@@ -43,3 +43,9 @@
   Oracle best/worst and rank-unit regret are descriptive procedural diagnostics.
 - Oracle drawings estimate an upper bound, not real-artist usability. Superseded
   Milestone 4 v1 aggregates remain excluded. No cloud compute was used.
+
+Milestone 5 is closed as an initial procedural negative result; see
+[verified results and limitations](BREAKDOWN_POSITION_PROTOCOL.md#milestone-5-closure-initial-procedural-negative-result).
+Flat improvements use `psnr_db_gain`, `ssim_gain`, `edge_f1_gain`,
+`chamfer_px_reduction`, and `trajectory_error_px_reduction`; absolute metrics
+retain their names. The UI requires manual k and cannot adopt the diagnostic.

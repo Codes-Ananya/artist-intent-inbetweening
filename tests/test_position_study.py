@@ -141,7 +141,7 @@ def test_ui_error_no_fallback(monkeypatch):
         raise RuntimeError('RIFE error')
     monkeypatch.setattr(app, 'create_run', fail)
     with pytest.raises(gr.Error, match='RIFE error'):
-        app.recommend_ui('a.png', 'b.png', 6)
+        app.analyze_position_ui('a.png', 'b.png', 6)
     assert calls == ['RifeBackend']
 
 
@@ -192,6 +192,107 @@ def test_ui_success_requires_only_endpoints(tmp_path, monkeypatch):
     monkeypatch.setattr(app, 'create_run', local_run)
     monkeypatch.setattr(app, 'RifeBackend', Fake)
     Fake.calls = []
-    k, scores, preview = app.recommend_ui(a, b, 6)
+    k, scores, preview = app.analyze_position_ui(a, b, 6)
     assert 1 <= k <= 6 and len(scores['positions']) == 6
+    assert 'recommended_k' not in scores
+    assert scores['experimental_highest_risk_position'] == k
     assert Fake.calls == [6] and Path(preview).exists()
+
+
+def test_ui_diagnostic_cannot_adopt_k():
+    ui = app.build_app()
+    config = ui.get_config_file()
+    components = config['components']
+    text = ' '.join(str(c['props'].get('value', '')) + str(c['props'].get('label', '')) for c in components)
+    assert 'Research diagnostic only.' in text
+    assert 'performed worse than midpoint and seeded random' in text
+    assert 'should not be treated as a recommendation' in text
+    assert 'Analyze experimental position risk' in text
+    assert 'Experimental highest-risk position' in text
+    assert 'Recommended k' not in text and 'Adopt' not in text and 'Suggest a breakdown' not in text
+    manual = next(c for c in components if c['props'].get('label', '').startswith('Manually choose breakdown'))
+    assert manual['props'].get('value') is None
+    assert all(manual['id'] not in d['outputs'] for d in config['dependencies'])
+    guided = next(d for d in config['dependencies'] if d.get('api_name') == 'guided_compare_ui')
+    assert manual['id'] in guided['inputs']
+    diagnostic = next(d for d in config['dependencies'] if d.get('api_name') == 'analyze_position_ui')
+    assert manual['id'] not in diagnostic['outputs']
+
+
+def test_manual_k_authoritative_and_required(tmp_path, monkeypatch):
+    a, b = tmp_path/'a.png', tmp_path/'b.png'
+    Image.new('RGB', (16, 16), 'white').save(a)
+    Image.new('RGB', (16, 16), 'black').save(b)
+    with pytest.raises(gr.Error, match='Choose breakdown position k manually'):
+        app.guided_compare_ui(a, a, b, 6, None, 12)
+    original_run, original_guided = app.create_run, app.create_guided_run
+    selected = []
+    def run(first, last, count, fps, *args):
+        return original_run(first, last, count, fps, output_root=tmp_path/'endpoint', backend=Fake())
+    def guided(first, breakdown, last, count, k, fps, *args):
+        selected.append(k)
+        return original_guided(first, breakdown, last, count, k, fps, output_root=tmp_path/'guided', backend=Fake())
+    monkeypatch.setattr(app, 'create_run', run)
+    monkeypatch.setattr(app, 'create_guided_run', guided)
+    result = app.guided_compare_ui(a, a, b, 6, 5, 12)
+    assert selected == [5]
+    assert result[-1]['guided_breakdown']['authoritative_frame_indices'] == [0, 5, 7]
+
+
+def test_flat_improvement_schema_and_absolute_metrics(full_study):
+    import csv
+    root, result, _ = full_study
+    fields = set(study.IMPROVEMENT_FIELDS.values())
+    absolute = set(study.IMPROVEMENT_FIELDS)
+    for path in [root/'candidates.csv', root/'policy_comparison.csv', *root.glob('tables/*/position_value.csv'), *root.glob('tables/*/policies.csv')]:
+        with path.open() as stream:
+            headers = set(csv.DictReader(stream).fieldnames)
+        assert fields <= headers
+        assert not absolute & headers
+    for case in result['cases']:
+        for policy in case['policies']:
+            assert fields <= policy.keys() and not absolute & policy.keys()
+        for candidate in case['candidates']:
+            for method in ('endpoint_only', 'guided'):
+                assert absolute <= candidate['breakdown_index_metrics'][method].keys()
+                assert not fields & candidate['breakdown_index_metrics'][method].keys()
+    summary = (root/'summary.md').read_text()
+    assert all(f'| {field} ' in summary for field in fields)
+
+
+def test_same_endpoint_ambiguity_deterministic(full_study):
+    root, result, _ = full_study
+    cases = result['cases'][:3]
+    for index in (0, 7):
+        assert len({(root/'ground_truth'/c['case_id']/f'frame_{index:04d}.png').read_bytes() for c in cases}) == 1
+    assert cases[0]['recommendation'] == cases[1]['recommendation'] == cases[2]['recommendation']
+    assert (root/'ground_truth/occlusion/frame_0000.png').read_bytes() != (root/'ground_truth/curved_arc/frame_0000.png').read_bytes()
+
+
+def test_negative_result_documentation():
+    root = Path(__file__).resolve().parents[1]
+    for name in ('RESEARCH_LOG.md', 'BREAKDOWN_POSITION_PROTOCOL.md'):
+        text = (root/'docs'/name).read_text()
+        for expected in ('24/24 RIFE candidates', '0/4', '| heuristic | 5.67 | 4.50 |',
+                         '| midpoint | 2.25 | 1.08 |', '| seeded random | 4.33 | 3.17 |',
+                         '| oracle best | 1.17 | 0.00 |', '| curved_arc | 1 | 3 | tied oracle-worst |',
+                         '| hold_then_fast | 1 | 4 | tied oracle-worst |', '| exaggeration | 1 | 4 | ranked 5/6 |',
+                         '| occlusion | 1 | 5 | tied oracle-worst |', 'two distinct endpoint-input configurations',
+                         'underdetermination by construction', 'not a statistical population',
+                         'not proof of being worse than random chance generally', 'Min-max normalization',
+                         'k=N was handled symmetrically', 'No cloud compute was used', 'newly created held-out'):
+            assert expected in text
+
+
+
+def test_real_inference_path_blocked_before_cuda(tmp_path, monkeypatch):
+    from inbetween.rife import RifeBackend
+    # Reaching the actual inference adapter is forbidden even with assets/CUDA
+    # discovery bypassed. A stub supplies only the exception type.
+    from types import SimpleNamespace
+    monkeypatch.setattr(sys, 'path', list(sys.path))
+    torch_stub = SimpleNamespace(cuda=SimpleNamespace(OutOfMemoryError=MemoryError))
+    backend = RifeBackend(tmp_path)
+    with pytest.raises(AssertionError, match='forbidden'):
+        backend._infer_rgb(Image.new('RGB', (16, 16)), Image.new('RGB', (16, 16)),
+                           [0.5], torch_stub, tmp_path)

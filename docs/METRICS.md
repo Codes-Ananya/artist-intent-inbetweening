@@ -16,3 +16,9 @@ trajectory gains use the intersection of measurable indices, and ranking uses
 trajectory only when that intersection covers all five indices for every k.
 Raw trajectory means retain their own measurable coverage through per-frame
 records; do not subtract independently covered means for the primary gain.
+
+Milestone 5 is closed as an initial procedural negative result; see
+[verified results and limitations](BREAKDOWN_POSITION_PROTOCOL.md#milestone-5-closure-initial-procedural-negative-result).
+Flat improvements use `psnr_db_gain`, `ssim_gain`, `edge_f1_gain`,
+`chamfer_px_reduction`, and `trajectory_error_px_reduction`; absolute metrics
+retain their names. The UI requires manual k and cannot adopt the diagnostic.

@@ -25,6 +25,6 @@ generates each endpoint sequence once, runs six existing guided orchestrations,
 computes paired generated-only gains and complete-coverage oracle ranks, and
 writes strict JSON, CSV, tables and existing-format visuals. Per-candidate errors
 are isolated; incomplete cases have no oracle rank or regret. The app's small
-recommendation section uses uploaded A/B only and feeds an editable k into the
-Milestone 4 workflow. Backend errors propagate without fallback. Tests prohibit
+diagnostic section uses uploaded A/B only, displays scores without adopting k,
+and requires manual k entry for the Milestone 4 workflow. Backend errors propagate without fallback. Tests prohibit
 real RIFE model imports while retaining explicitly mocked backend tests.

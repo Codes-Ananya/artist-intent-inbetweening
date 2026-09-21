@@ -42,6 +42,6 @@
 - Observable-only deterministic risk components, constant/missing handling,
   midpoint/random/oracle policies and preregistered ranks/regret.
 - Strict reports, per-case value/risk tables, previews, provenance and isolated failures.
-- UI recommendation/adoption/override feeding the existing one-D workflow; no fallback.
+- UI research diagnostic with manual k required; no adoption action or fallback.
 - CPU fake-backend tests, unchanged Milestone 1–4 tests, local regressions and HTTP check.
-- Normal-WSL GPU position results remain pending; CPU validation is not GPU quality evidence.
+- Closed negative normal-WSL result: 24/24 candidates, 0/4 heuristic oracle selections; CPU validation is not GPU quality evidence.

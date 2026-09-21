@@ -82,31 +82,26 @@ Its primary generated-only metrics compare indices 1..N excluding D at k for bot
 
 In a normal WSL shell with CUDA and the pinned local RIFE assets, run `.venv/bin/python scripts/guided_rife_smoke_test.py` for a small GPU acceptance check.
 
-## Milestone 5: breakdown-position value and recommendation
+## Milestone 5: closed as a negative experimental result
 
-The **Artist-guided breakdown** tab can run endpoint-only RIFE from A and B,
-show an experimental recommended k and all risk components, and adopt the
-suggestion or let you override k. Upload just one D at your chosen position,
-then use the existing guided comparison. The recommender cannot see ground
-truth or oracle breakdowns and is not yet a learned contribution.
+The **Artist-guided breakdown** tab offers **Analyze experimental position risk**,
+per-position scores and an **experimental highest-risk position**. Research
+diagnostic only: in the initial procedural study this heuristic performed worse
+than midpoint and seeded random and should not be treated as a recommendation.
+Manually enter k and upload D before guided comparison; analysis never fills k.
 
-The [preregistered position protocol](docs/BREAKDOWN_POSITION_PROTOCOL.md)
-evaluates every k=1..6 on the existing four procedural cases. This is a
-procedural oracle-position study: oracle breakdowns estimate an upper bound,
-and no real-artist usability conclusion is supported. Candidate comparisons
-are matched leave-one-position-out estimates, with different excluded frames
-across k. Milestone 4 v1 aggregates remain excluded. No cloud compute is used.
+The [protocol and verified results](docs/BREAKDOWN_POSITION_PROTOCOL.md) record
+24/24 successful RIFE candidates and 0/4 heuristic oracle selections. Four
+intended motion sequences contain only two distinct endpoint-input configurations;
+three share identical endpoints. This is an initial procedural negative result,
+not a population claim. Seeded random means one deterministic baseline, not
+random chance generally. Runtime is diagnostic only. No cloud compute was used.
 
-From the repository root in normal WSL with the existing pinned local assets:
+Preserve the original GPU artifacts. A CPU implementation check can use:
 
 ```bash
-.venv/bin/python -m inbetween.position_study --backend rife --output outputs/breakdown-position-study
+.venv/bin/python -m inbetween.position_study --backend crossfade --output outputs/breakdown-position-study-cpu-closure
 ```
 
-For a CPU implementation check, replace `rife` with `crossfade` and use
-`--output outputs/breakdown-position-study-cpu`. No PYTHONPATH setup is needed.
-Reports include strict `results.json`, `candidates.csv`, `policy_comparison.csv`,
-`summary.md`, per-case tables under `tables/`, and contact sheets/GIFs for
-endpoint-only and every k under `visuals/`. Embedded manifests retain provenance
-and exact saved-PNG checks. Failures are recorded and later candidates continue;
-the CLI exits nonzero if coverage is incomplete. Runtime remains diagnostic.
+Flat improvements have explicit gain/reduction field names; absolute frame
+metrics remain separate. No heuristic tuning or post-hoc correction was evaluated.
