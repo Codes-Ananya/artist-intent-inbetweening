@@ -66,3 +66,52 @@ The corrected local RIFE run at `outputs/guided-breakdown-benchmark-v2` complete
 | `occlusion` | +7.12 dB | +0.028 | +0.184 | 74.2% | 66.3% |
 
 For `occlusion`, trajectory coverage improved from 3/5 endpoint-only frames to 5/5 guided frames; its trajectory error means therefore cover different numbers of measurable frames. These are procedural oracle-breakdown results. They do not establish performance with artist-created drawings or novelty. Runtime values are not used for method comparison because backend invocation and model-loading behavior differ. The earlier v1 aggregates are superseded by this corrected run.
+
+## 2026-09-21: Milestone 5 position value and recommendation
+
+Initial checks confirmed a clean `feature/breakdown-position-study` branch and
+`main` exactly at tagged `milestone-4-guided-breakdown`, commit
+`3f5ed1604567325bd648f8add39fdb806d19ca34`. No merge or tag was performed.
+
+Pre-registered `BREAKDOWN_POSITION_PROTOCOL.md` before examining any Milestone 5
+GPU results. The primary criterion is mean descending rank of matched Edge F1
+gain and Chamfer reduction, with trajectory reduction included only when all
+six candidates have complete paired coverage. Lower mean rank is better;
+rank ties use smaller k. Regret is the difference from oracle-best mean rank.
+Incomplete candidate coverage produces no oracle ranking or regret.
+
+The study generates endpoint-only once per case and evaluates all k=1..6 for
+the four existing cases. Primary aggregates exclude the same k in both methods;
+k metrics are separate. These matched leave-one-position-out estimates exclude
+different frames across candidates. The transparent experimental recommender
+sees only endpoint-only images, never ground truth, D or case identity. The UI
+adopts or overrides its suggestion within the existing one-breakdown workflow.
+
+Final local validation: `pip check`, offline application-lock dry run and
+installed GPU requirement consistency passed (torch 2.14.0+cu126, torchvision
+0.29.0+cu126). Compilation passed. Complete pytest: **55 passed, 1 skipped**
+(existing CUDA-dependent mocked OOM test); Milestone 1–4 test files are unchanged.
+A new test guard prohibits real RIFE model imports; fake backends validate all
+positions, pairing, exact pixels, deterministic/missing-risk behavior, ranks,
+regret, failure isolation, UI success/error and module CLI imports without
+PYTHONPATH. CPU crossfade study completed **24/24 candidates**, with exact A/D/B,
+under ignored `outputs/breakdown-position-study-cpu-v2/`. Fake-backend studies
+also completed in pytest temporary directories. Strict JSON validation covers
+all study JSON files. The sample exported run `20260921T161243-990d1f8b` and
+quick crossfade benchmark (`outputs/benchmark-m5-quick/`) passed. Gradio returned
+HTTP 200 on loopback port 7861. Diff whitespace and output/asset/venv ignore
+checks passed. No outputs, pinned RIFE assets or dependencies were modified
+for inclusion in Git.
+
+CUDA availability was false in this sandbox. No Milestone 5 GPU quality,
+recommendation effectiveness or timing result is claimed. Run in normal WSL:
+
+```bash
+cd /home/ananya_anand/projects/animation-inbetweening
+.venv/bin/python -m inbetween.position_study --backend rife --output outputs/breakdown-position-study
+```
+
+This remains a procedural oracle-position study: oracle breakdowns estimate
+an upper bound; no real-artist usability conclusion is supported. The heuristic
+is experimental, not yet a learned contribution. Runtime remains diagnostic.
+No cloud compute was used. Superseded Milestone 4 v1 aggregates remain excluded.

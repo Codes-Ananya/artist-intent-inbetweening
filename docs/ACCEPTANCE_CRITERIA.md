@@ -34,3 +34,14 @@
 - Primary generated-only paired metrics exclude k for both methods; index-k oracle metrics, perfect PSNR, evaluated counts, and runtime limitations are explicit.
 - Normal pytest never launches real RIFE inference or writes persistent smoke outputs when CUDA is available.
 - CPU fake-backend tests and normal-WSL CUDA smoke command. Generated assets remain ignored.
+
+## Milestone 5
+
+- Four existing cases, N=6, all positions; one endpoint generation per case.
+- Matched exclusion of k, separate authoritative-k metrics, exact A/D/B PNGs.
+- Observable-only deterministic risk components, constant/missing handling,
+  midpoint/random/oracle policies and preregistered ranks/regret.
+- Strict reports, per-case value/risk tables, previews, provenance and isolated failures.
+- UI recommendation/adoption/override feeding the existing one-D workflow; no fallback.
+- CPU fake-backend tests, unchanged Milestone 1–4 tests, local regressions and HTTP check.
+- Normal-WSL GPU position results remain pending; CPU validation is not GPU quality evidence.

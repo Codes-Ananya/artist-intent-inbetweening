@@ -26,3 +26,20 @@
 - Orchestrate two calls through `InterpolationBackend`; keep RIFE internals and endpoint-only behavior unchanged. Never fall back to crossfade after failure.
 - Use ground-truth-derived D for a controlled oracle diagnostic, not as evidence from artists. Splitting around D is not a novel algorithm claim; measuring intervention benefit and placement is the research goal.
 - Keep all execution and assets local, without cloud services or training.
+
+## Milestone 5 decisions
+
+- Pre-register the primary mean-rank calculation in `BREAKDOWN_POSITION_PROTOCOL.md`
+  before any Milestone 5 GPU results. Rank Edge F1 gain and Chamfer reduction;
+  include trajectory reduction only with complete paired coverage in all six
+  candidates. PSNR/SSIM are secondary. Incomplete candidates invalidate oracle
+  ranks and regrets for that case.
+- Use matched leave-one-position-out intervention-benefit estimates, acknowledging
+  that candidates omit different frames. Preserve the authoritative A/D/B path.
+- Keep the experimental ground-truth-free heuristic separate from procedural
+  evaluation; use transparent equal normalized component contributions, no tuning,
+  case-specific rule, training, cloud service, model download or new dependency.
+- Midpoint is earlier middle slot k=3; seeded random is case/order independent.
+  Oracle best/worst and rank-unit regret are descriptive procedural diagnostics.
+- Oracle drawings estimate an upper bound, not real-artist usability. Superseded
+  Milestone 4 v1 aggregates remain excluded. No cloud compute was used.

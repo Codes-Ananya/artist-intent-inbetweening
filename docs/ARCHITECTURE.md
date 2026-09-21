@@ -15,3 +15,16 @@ Frames are retained as PIL RGB/RGBA images. Source endpoint pixel arrays are cop
 ## Milestone 4 guided orchestration
 
 `guided.py` wraps any `InterpolationBackend` with two segment calls. It copies A, D and B into indices 0, k and N+1 and checks their pixels. `create_guided_run` reuses `create_run` exports and adds breakdown source hash, segment diagnostics, authoritative indices and saved-PNG checks to the manifest. `guided_benchmark.py` evaluates four oracle-breakdown cases independently, recording failures without fallback. The existing endpoint-only path remains unchanged.
+
+## Milestone 5 position study
+
+`position_recommendation.py` accepts only endpoint-only image sequences. Its
+observable component extraction, safe normalization and deterministic selection
+are separate from procedural assets and oracle evaluation. `position_study.py`
+generates each endpoint sequence once, runs six existing guided orchestrations,
+computes paired generated-only gains and complete-coverage oracle ranks, and
+writes strict JSON, CSV, tables and existing-format visuals. Per-candidate errors
+are isolated; incomplete cases have no oracle rank or regret. The app's small
+recommendation section uses uploaded A/B only and feeds an editable k into the
+Milestone 4 workflow. Backend errors propagate without fallback. Tests prohibit
+real RIFE model imports while retaining explicitly mocked backend tests.

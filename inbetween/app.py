@@ -11,6 +11,21 @@ from .guided import create_guided_run, _validate
 from .benchmark_cases import CATEGORIES
 
 
+def recommend_ui(first, last, count):
+    from .position_recommendation import recommend_position
+    from .position_study import read_frames
+    try:
+        if not first or not last:
+            raise ValueError("Upload A and B before requesting a recommendation")
+        if not 1 <= int(count) <= 120:
+            raise ValueError("Recommendation requires 1–120 intermediate positions")
+        manifest = create_run(first, last, int(count), backend=RifeBackend())
+        result = recommend_position(read_frames(manifest))
+        return result["recommended_k"], result, manifest["exports"]["gif"]
+    except (ValueError, RuntimeError) as exc:
+        raise gr.Error(str(exc)) from exc
+
+
 def select_backend(label: str):
     if label == "Crossfade baseline":
         return CrossfadeBackend()
@@ -130,6 +145,14 @@ def build_app():
                 glast = gr.File(label="Keyframe B", file_types=[".png"], type="filepath")
             gcount = gr.Slider(1, 120, value=6, step=1, label="Intermediate frames N")
             gposition = gr.Number(value=3, precision=0, label="Breakdown position k (1 to N)")
+            gr.Markdown("Experimental position heuristic: uses only A, B and endpoint-only RIFE frames. Generate a suggestion, then adopt it or type your own k above and upload one breakdown D. This is not a learned model or an artist-validated recommendation.")
+            recommend_button = gr.Button("Suggest a breakdown position from A and B")
+            recommended = gr.Number(label="Recommended k", interactive=False, precision=0)
+            risks = gr.JSON(label="Risk score and components for every position")
+            endpoint_preview = gr.Image(label="Endpoint-only preview", interactive=False)
+            adopt = gr.Button("Adopt recommended k (editable above)")
+            recommend_button.click(recommend_ui, [gfirst, glast, gcount], [recommended, risks, endpoint_preview])
+            adopt.click(lambda k: k, [recommended], [gposition])
             gfps = gr.Slider(1, 60, value=12, step=1, label="FPS")
             gbutton = gr.Button("Compare endpoint-only and guided RIFE")
             guided_outputs = []
