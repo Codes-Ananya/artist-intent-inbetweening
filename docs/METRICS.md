@@ -9,3 +9,16 @@ Trajectory error is mean Euclidean pixel distance between annotated body center 
 `backend_wall_seconds` measures the entire `backend.generate` call, including model loading, preprocessing, inference, and output preparation. `inference_seconds` is the backend-reported inference loop where available; for crossfade it equals wall time because there is no separate loop measurement. `model_load_seconds` records RIFE model initialization and checkpoint load when measured. These are durations, not mutually exclusive components. Peak CUDA allocation is reported when available.
 
 For the guided oracle diagnostic, primary `means` and `generated_only_means` use the same frame indices for both methods: `1..N` excluding breakdown index `k`. `evaluated_frame_indices`, `excluded_frame_indices`, and `evaluated_frame_count` make the pairing explicit. Both methods' index-k metrics appear in `breakdown_index_metrics`; `is_authoritative_breakdown` marks guided D. Per-frame and aggregate perfect PSNR use a null numeric value plus `psnr_perfect_match` or `generated_only_psnr_perfect_match_count`. If any evaluated PSNR is infinite, its mean is null and `generated_only_psnr_mean_undefined_due_to_perfect_match` is true; infinity is never silently averaged or dropped. Guided backend wall time covers two calls and can differ in model loading from endpoint-only's one call. These durations are operational diagnostics, not a fair speed comparison; `guided_breakdown.segments` gives authoritative segment diagnostics.
+
+Milestone 5 adds a preregistered within-case position ranking, defined precisely
+in `BREAKDOWN_POSITION_PROTOCOL.md`. Gains are matched on indices excluding k;
+trajectory gains use the intersection of measurable indices, and ranking uses
+trajectory only when that intersection covers all five indices for every k.
+Raw trajectory means retain their own measurable coverage through per-frame
+records; do not subtract independently covered means for the primary gain.
+
+Milestone 5 is closed as an initial procedural negative result; see
+[verified results and limitations](BREAKDOWN_POSITION_PROTOCOL.md#milestone-5-closure-initial-procedural-negative-result).
+Flat improvements use `psnr_db_gain`, `ssim_gain`, `edge_f1_gain`,
+`chamfer_px_reduction`, and `trajectory_error_px_reduction`; absolute metrics
+retain their names. The UI requires manual k and cannot adopt the diagnostic.

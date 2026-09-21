@@ -81,3 +81,27 @@ Its primary generated-only metrics compare indices 1..N excluding D at k for bot
 ```
 
 In a normal WSL shell with CUDA and the pinned local RIFE assets, run `.venv/bin/python scripts/guided_rife_smoke_test.py` for a small GPU acceptance check.
+
+## Milestone 5: closed as a negative experimental result
+
+The **Artist-guided breakdown** tab offers **Analyze experimental position risk**,
+per-position scores and an **experimental highest-risk position**. Research
+diagnostic only: in the initial procedural study this heuristic performed worse
+than midpoint and seeded random and should not be treated as a recommendation.
+Manually enter k and upload D before guided comparison; analysis never fills k.
+
+The [protocol and verified results](docs/BREAKDOWN_POSITION_PROTOCOL.md) record
+24/24 successful RIFE candidates and 0/4 heuristic oracle selections. Four
+intended motion sequences contain only two distinct endpoint-input configurations;
+three share identical endpoints. This is an initial procedural negative result,
+not a population claim. Seeded random means one deterministic baseline, not
+random chance generally. Runtime is diagnostic only. No cloud compute was used.
+
+Preserve the original GPU artifacts. A CPU implementation check can use:
+
+```bash
+.venv/bin/python -m inbetween.position_study --backend crossfade --output outputs/breakdown-position-study-cpu-closure
+```
+
+Flat improvements have explicit gain/reduction field names; absolute frame
+metrics remain separate. No heuristic tuning or post-hoc correction was evaluated.

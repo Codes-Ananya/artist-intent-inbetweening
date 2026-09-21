@@ -66,3 +66,128 @@ The corrected local RIFE run at `outputs/guided-breakdown-benchmark-v2` complete
 | `occlusion` | +7.12 dB | +0.028 | +0.184 | 74.2% | 66.3% |
 
 For `occlusion`, trajectory coverage improved from 3/5 endpoint-only frames to 5/5 guided frames; its trajectory error means therefore cover different numbers of measurable frames. These are procedural oracle-breakdown results. They do not establish performance with artist-created drawings or novelty. Runtime values are not used for method comparison because backend invocation and model-loading behavior differ. The earlier v1 aggregates are superseded by this corrected run.
+
+## 2026-09-21: Milestone 5 initial implementation (historical)
+
+Initial checks confirmed a clean `feature/breakdown-position-study` branch and
+`main` exactly at tagged `milestone-4-guided-breakdown`, commit
+`3f5ed1604567325bd648f8add39fdb806d19ca34`. No merge or tag was performed.
+
+Pre-registered `BREAKDOWN_POSITION_PROTOCOL.md` before examining any Milestone 5
+GPU results. The primary criterion is mean descending rank of matched Edge F1
+gain and Chamfer reduction, with trajectory reduction included only when all
+six candidates have complete paired coverage. Lower mean rank is better;
+rank ties use smaller k. Regret is the difference from oracle-best mean rank.
+Incomplete candidate coverage produces no oracle ranking or regret.
+
+The study generates endpoint-only once per case and evaluates all k=1..6 for
+the four existing cases. Primary aggregates exclude the same k in both methods;
+k metrics are separate. These matched leave-one-position-out estimates exclude
+different frames across candidates. The transparent experimental recommender
+sees only endpoint-only images, never ground truth, D or case identity. The UI
+adopts or overrides its suggestion within the existing one-breakdown workflow.
+
+Final local validation: `pip check`, offline application-lock dry run and
+installed GPU requirement consistency passed (torch 2.14.0+cu126, torchvision
+0.29.0+cu126). Compilation passed. Complete pytest: **55 passed, 1 skipped**
+(existing CUDA-dependent mocked OOM test); Milestone 1–4 test files are unchanged.
+A new test guard prohibits real RIFE model imports; fake backends validate all
+positions, pairing, exact pixels, deterministic/missing-risk behavior, ranks,
+regret, failure isolation, UI success/error and module CLI imports without
+PYTHONPATH. CPU crossfade study completed **24/24 candidates**, with exact A/D/B,
+under ignored `outputs/breakdown-position-study-cpu-v2/`. Fake-backend studies
+also completed in pytest temporary directories. Strict JSON validation covers
+all study JSON files. The sample exported run `20260921T161243-990d1f8b` and
+quick crossfade benchmark (`outputs/benchmark-m5-quick/`) passed. Gradio returned
+HTTP 200 on loopback port 7861. Diff whitespace and output/asset/venv ignore
+checks passed. No outputs, pinned RIFE assets or dependencies were modified
+for inclusion in Git.
+
+At initial implementation CUDA was unavailable in the sandbox. The subsequent
+normal-WSL results below supersede that pending status.
+
+This remains a procedural oracle-position study: oracle breakdowns estimate
+an upper bound; no real-artist usability conclusion is supported. The heuristic
+is experimental, not yet a learned contribution. Runtime remains diagnostic.
+No cloud compute was used. Superseded Milestone 4 v1 aggregates remain excluded.
+
+## Milestone 5 closure: initial procedural negative result
+
+Independent review findings and the saved normal-WSL GPU report verify that
+24/24 RIFE candidates completed. All authoritative A/D/B checks passed.
+Strict JSON passed. The heuristic selected k=1 for every case; heuristic oracle
+selections: 0/4. Lower mean rank and regret are better.
+
+| Policy | Mean rank | Mean regret |
+| --- | --- | --- |
+| heuristic | 5.67 | 4.50 |
+| midpoint | 2.25 | 1.08 |
+| seeded random | 4.33 | 3.17 |
+| oracle best | 1.17 | 0.00 |
+
+| Intended motion sequence | Heuristic k | Oracle k | Heuristic outcome |
+| --- | --- | --- | --- |
+| curved_arc | 1 | 3 | tied oracle-worst |
+| hold_then_fast | 1 | 4 | tied oracle-worst |
+| exaggeration | 1 | 4 | ranked 5/6 |
+| occlusion | 1 | 5 | tied oracle-worst |
+
+This is an initial procedural negative result, not a statistical population
+claim. “Worse than seeded random” refers to this one deterministic seeded-random
+baseline, not proof of being worse than random chance generally. Runtime is
+diagnostic only. No cloud compute was used.
+
+### Identifiability and boundary artifact
+
+curved_arc, hold_then_fast and exaggeration have byte-identical A/B endpoint
+frames. An endpoint-only deterministic recommender must therefore produce the
+same output for all three, despite different intended intermediate motions and
+oracle positions. There are two distinct endpoint-input configurations and
+four intended motion sequences, not four independent endpoint-input trials.
+Three sequences form an intentional/accidental same-endpoint ambiguity group.
+This demonstrates underdetermination by construction for that ambiguity group;
+occlusion supplies one additional distinct negative case.
+
+The observed k=1 scores received large endpoint-adjacent temporal-difference
+and centroid/area signals. Min-max normalization amplified these boundary
+outliers. k=N was handled symmetrically in code but showed a smaller empirical
+spike. This is a limitation of heuristic v1; no post-hoc correction is evaluated
+in this milestone.
+
+### Closure and reporting corrections
+
+Milestone 5 is closed as a negative result. The normal UI exposes research
+scores and an “experimental highest-risk position”, requires manual k entry,
+and never adopts the diagnostic position. Manual k remains authoritative for
+the existing guided workflow. The v1 diagnostic implementation is retained for
+reproducibility without redesign or tuning. Existing procedural cases remain
+unchanged: changing them after seeing results would invalidate the pre-registered
+run. Any redesigned heuristic must be evaluated later on newly created held-out
+cases with distinct endpoints.
+
+Flat CSV/report and policy-table improvement fields are `psnr_db_gain`,
+`ssim_gain`, `edge_f1_gain`, `chamfer_px_reduction`, and
+`trajectory_error_px_reduction`; larger is better. Absolute per-frame,
+aggregate-means and breakdown-index metrics keep their existing names. Nested
+`improvement` and `metric_ranks` retain v1 keys with their explicit context.
+Perfect PSNR remains null with perfect-match flags/counts; strict JSON forbids
+NaN/Infinity. Historical artifacts in `outputs/breakdown-position-study` retain
+the original schema and are preserved unchanged. No new GPU effectiveness
+study was run for this correction; CPU runs validate implementation only.
+
+Closure validation (local existing `.venv`): Python compilation passed; complete
+pytest **61 passed, 1 skipped** (existing CUDA-dependent mocked OOM test).
+Tests inspect Gradio event wiring to prove no callback writes manual k, verify
+manual k reaches guided generation, distinguish flat gains from absolute metrics,
+check the documented results and same-endpoint deterministic diagnostics, and
+prove the real inference adapter is blocked by the pytest model-import guard.
+The CPU crossfade study completed **24/24** candidates with exact A/D/B checks
+in `outputs/breakdown-position-study-cpu-closure`. Strict JSON validation passed
+for all 33 original GPU JSON files, 33 CPU JSON files and 5 quick-regression JSON
+files. SHA-256 comparison confirmed all **444** original GPU artifact files
+unchanged. Sample export `20260921T163512-69ec4bfa`, the existing quick crossfade
+benchmark, `pip check`, and offline lock-file dry run passed. Gradio returned
+HTTP 200 on loopback port 7861 (startup required execution outside the sandbox).
+`git diff --check` and output/weights/credentials/venv ignore checks passed.
+Milestone 1–4 tests, procedural cases, diagnostic v1 and ranking are unchanged.
+No new models, dependencies, datasets, GPU study, merge or tag were introduced.
