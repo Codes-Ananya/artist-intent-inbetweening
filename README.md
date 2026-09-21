@@ -105,3 +105,43 @@ Preserve the original GPU artifacts. A CPU implementation check can use:
 
 Flat improvements have explicit gain/reduction field names; absolute frame
 metrics remain separate. No heuristic tuning or post-hoc correction was evaluated.
+
+## Milestone 6: preregistered intent guidance with abstention
+
+The separate [Milestone 6 protocol](docs/INTENT_GUIDANCE_PROTOCOL.md) freezes ten
+new procedural cases and a small explicit temporal-intent mapping. Abstention
+handles ambiguous intent deterministically; it is not calibrated confidence.
+Selective answered-subset comparisons and full-suite forced-choice ablation
+results are reported separately. The Milestone 5 heuristic and UI are unchanged;
+manual k remains authoritative. This is not a final research contribution.
+
+CPU implementation validation (use a fresh output directory):
+
+```bash
+.venv/bin/python -m inbetween.intent_study --backend crossfade --output outputs/intent-guidance-cpu-v1
+```
+
+Milestone 6 is closed as a **negative/mixed preregistered GPU result** from
+`outputs/intent-guidance-rife-v1` (`execution_kind: local_rife_evaluation`).
+All 60/60 candidates succeeded, coverage was 6/10, all 10 cases were rankable,
+and all authoritative A/D/B checks were exact. All 82 JSON files parsed strictly.
+
+On the six answered cases (lower is better):
+
+| Policy | Mean rank | Mean regret |
+|---|---:|---:|
+| Intent | 3.4444 | 1.6111 |
+| Midpoint | 2.7778 | 0.9444 |
+| Frozen heuristic | 4.0556 | 2.2222 |
+
+**Both preregistered descriptive criteria failed.** Intent beat the frozen
+heuristic but lost to midpoint, with 1 win, 2 ties and 3 losses against midpoint.
+Answered forced-choice regret (1.6111) was not lower than abstained-case
+forced-choice regret (1.5417): abstention did not isolate harder forced-choice
+cases. These results do not establish calibrated abstention, generalization,
+artist usability, or successful intent-based recommendation.
+
+The original GPU output is preserved, including its erroneous “CPU values are
+validation only” summary label. The reporting code now labels CPU/injected runs
+as validation-only and local RIFE runs as GPU experimental results. No experiment,
+metric or frozen protocol was revised; see the [closure record](docs/RESEARCH_LOG.md).

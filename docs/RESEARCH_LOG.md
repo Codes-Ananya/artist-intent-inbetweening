@@ -191,3 +191,84 @@ HTTP 200 on loopback port 7861 (startup required execution outside the sandbox).
 `git diff --check` and output/weights/credentials/venv ignore checks passed.
 Milestone 1–4 tests, procedural cases, diagnostic v1 and ranking are unchanged.
 No new models, dependencies, datasets, GPU study, merge or tag were introduced.
+
+## 2026-09-21: Milestone 6 preregistered implementation and CPU validation
+
+Before changes, main was clean and HEAD/main resolved to
+`1e2f25e849aecf8d8349353f4f765dfd98b4646e`. The annotated
+`milestone-5-position-study` tag peeled to the same commit. Created
+`feature/intent-guidance-abstention`; no merge or tag is part of this milestone.
+
+Preregistered `INTENT_GUIDANCE_PROTOCOL.md` freezes normalized time, temporal
+bins, representatives, vocabulary, deterministic ambiguity handling, forced-choice
+ablation, ten new procedural constructions/equations, null seeds, intent records,
+ranking and descriptive success criteria before any Milestone 6 GPU evaluation.
+A CPU ground-truth preview caught a folding-panel edge extending outside the
+canvas; its extent was corrected before the final CPU validation and freeze.
+No held-out RIFE output was inspected or used to tune these constructions.
+
+The separate runner records source/truth hashes and decisions before inference,
+rejects endpoint hash collisions, generates endpoint-only once per case and
+independently evaluates k=1..6 with one ideal D. It reuses the frozen Milestone 5
+ranking. Selective answered-subset and full-suite policy comparisons use explicit
+shared case intersections. Abstention remains null, never zero regret or a silent
+midpoint fallback. Coverage is designed at 6/10, not estimated artist coverage.
+The simple mapping is not claimed as the final research contribution. UI and
+manual k authority are unchanged.
+
+Validation in the existing local `.venv`: **71 passed, 1 skipped** (existing
+CUDA-dependent mocked OOM test); normal pytest retains the real-model import
+guard. Compilation and `pip check` passed. The CPU crossfade study at ignored
+`outputs/intent-guidance-cpu-v1` completed **60/60 candidates** with exact saved
+A/D/B. All **82 JSON files** passed strict nonfinite rejection; CSV and Markdown
+reports include coverage, completeness, reasons, candidate outcomes, explicit
+subset IDs, baseline comparisons and forced-choice analysis. Source hashes in
+the run match the preregistered implementation. Four frozen Milestone 5 source
+hashes were checked against the required base commit (heuristic, study/ranking,
+procedural cases and metrics). Sample export `20260921T170954-c6e7bb2e` passed.
+Diff whitespace and output/weights/virtual-environment ignore checks passed.
+
+These CPU results validate implementation only. No Milestone 6 GPU inference,
+RIFE effectiveness measurement, model download, cloud service, new dependency,
+or artist study was performed. The separate normal-WSL RTX 4050 command is in
+`INTENT_GUIDANCE_PROTOCOL.md`; that evaluation remains pending.
+
+
+## 2026-09-21: Milestone 6 GPU closure — negative/mixed preregistered result
+
+Closure began on clean `feature/intent-guidance-abstention` at
+`bb12375871bde179d2147b61e35a7d5dee9569c9`. Read-only verification of completed
+`outputs/intent-guidance-rife-v1` confirmed `execution_kind: local_rife_evaluation`,
+60/60 successful candidates, coverage 6/10, all 10 cases rankable, and exact
+recorded authoritative endpoint A/B and candidate A/D/B checks. All 82 JSON files
+passed strict parsing with nonfinite constants rejected. All 939 output files
+were hashed before closure edits for an unchanged-output check.
+
+Both preregistered descriptive criteria failed. On the six answered cases,
+intent mean rank/regret was **3.4444/1.6111**, midpoint **2.7778/0.9444**, and the
+frozen heuristic **4.0556/2.2222**. Intent beat the frozen heuristic but lost to
+midpoint, recording **1 win, 2 ties and 3 losses** against midpoint. Answered
+forced-choice regret **1.6111** was not lower than abstained-case forced-choice
+regret **1.5417**. Abstention therefore did not isolate harder forced-choice
+cases. This is a negative/mixed preregistered result, with no claim of calibrated
+abstention, generalization, artist usability or successful intent-based
+recommendation. Coverage is still designed coverage on procedural cases.
+
+The saved GPU summary incorrectly says “CPU values are validation only”. That
+historical artifact is preserved. A reporting-only correction now labels local
+RIFE runs as GPU experimental results and CPU/injected runs as validation-only,
+using execution provenance rather than the requested backend name. Regression
+coverage uses synthetic criterion values and injected crossfade data only.
+`INTENT_GUIDANCE_PROTOCOL.md` remains byte-for-byte frozen, as do cases, intent
+mappings, abstention rules, candidate data and metrics. No GPU inference or
+metric recalculation was performed during closure.
+
+Closure validation in the existing `.venv`: **75 passed, 1 skipped** (existing
+CUDA-dependent mocked OOM test); the real-model import guard remained active.
+`pip check`, compilation of `inbetween`, `tests` and `scripts`, and
+`git diff --check` passed. CPU sample export `20260921T172838-86518899` completed.
+Read-only pixel verification independently confirmed all 200 saved authoritative
+frame comparisons against saved ground truth; all 70 run manifests record
+`cuda:0`. Preregistered source hashes matched the original HEAD above. All 939
+GPU output files remained byte-for-byte unchanged. No merge or tag is part of
+this closure.

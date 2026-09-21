@@ -28,3 +28,14 @@ are isolated; incomplete cases have no oracle rank or regret. The app's small
 diagnostic section uses uploaded A/B only, displays scores without adopting k,
 and requires manual k entry for the Milestone 4 workflow. Backend errors propagate without fallback. Tests prohibit
 real RIFE model imports while retaining explicitly mocked backend tests.
+
+## Milestone 6 intent study
+
+`intent_guidance.py` accepts structured events only and emits a deterministic
+position or abstention plus a separately labelled forced-choice ablation.
+`intent_cases.py` owns ten frozen constructions and rejects endpoint collisions
+against one another and Milestone 5. `intent_study.py` writes preregistration
+hashes before inference, runs one endpoint sequence and six one-D candidates per
+case through existing orchestration, and reuses Milestone 5 metrics/ranking.
+Reports separate selective and full-suite policy intersections, completeness,
+coverage, and failures. Existing backends, heuristic, runner and UI are unchanged.

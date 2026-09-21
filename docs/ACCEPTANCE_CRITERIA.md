@@ -45,3 +45,34 @@
 - UI research diagnostic with manual k required; no adoption action or fallback.
 - CPU fake-backend tests, unchanged Milestone 1–4 tests, local regressions and HTTP check.
 - Closed negative normal-WSL result: 24/24 candidates, 0/4 heuristic oracle selections; CPU validation is not GPU quality evidence.
+
+## Milestone 6 closure: negative/mixed preregistered result
+
+- [x] Clean main, HEAD and peeled Milestone 5 tag verified at required base commit;
+  work isolated on feature/intent-guidance-abstention.
+- [x] Ten distinct held-out constructions, equations/geometry/intent records and
+  null seeds documented before GPU evaluation; endpoint hash collisions rejected.
+- [x] Fixed N=6 phase mapping and deterministic ambiguity abstention; separately
+  labelled forced-choice ablation; no silent midpoint substitution.
+- [x] One endpoint run and six independent one-breakdown candidates per case;
+  exact saved A/D/B and corrected frozen Milestone 5 rank/regret protocol.
+- [x] Strict JSON/CSV/Markdown with explicit subset IDs, shared policy comparison
+  subsets, coverage, completeness, reasons, per-case metrics and failure records.
+- [x] CPU-safe fake-backend tests; existing real-model import guard retained;
+  Milestone 1-5 behavior and manual UI authority unchanged.
+- [x] Completed GPU output `outputs/intent-guidance-rife-v1` verified as
+  `local_rife_evaluation`: 60/60 candidates succeeded, coverage 6/10, all 10 cases
+  rankable, exact authoritative A/D/B checks, all 82 JSON files strictly parsed.
+- [x] GPU results recorded without revising the frozen experiment or output.
+- [ ] Descriptive placement criterion **failed**: answered intent mean rank/regret
+  3.4444/1.6111 beat frozen heuristic 4.0556/2.2222 but lost to midpoint
+  2.7778/0.9444 (1 win, 2 ties, 3 losses against midpoint).
+- [ ] Descriptive abstention criterion **failed**: answered forced-choice regret
+  1.6111 was not lower than abstained-case regret 1.5417. Abstention did not
+  isolate harder forced-choice cases.
+
+Closure records completion of the preregistered evaluation, not successful
+intent-based recommendation. No calibrated abstention, generalization or artist
+usability claim is supported. The protocol remains frozen; the historical GPU
+summary's CPU-only label is a reporting error, corrected in code for future
+reports without changing existing output.
