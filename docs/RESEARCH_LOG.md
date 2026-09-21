@@ -232,3 +232,43 @@ These CPU results validate implementation only. No Milestone 6 GPU inference,
 RIFE effectiveness measurement, model download, cloud service, new dependency,
 or artist study was performed. The separate normal-WSL RTX 4050 command is in
 `INTENT_GUIDANCE_PROTOCOL.md`; that evaluation remains pending.
+
+
+## 2026-09-21: Milestone 6 GPU closure — negative/mixed preregistered result
+
+Closure began on clean `feature/intent-guidance-abstention` at
+`bb12375871bde179d2147b61e35a7d5dee9569c9`. Read-only verification of completed
+`outputs/intent-guidance-rife-v1` confirmed `execution_kind: local_rife_evaluation`,
+60/60 successful candidates, coverage 6/10, all 10 cases rankable, and exact
+recorded authoritative endpoint A/B and candidate A/D/B checks. All 82 JSON files
+passed strict parsing with nonfinite constants rejected. All 939 output files
+were hashed before closure edits for an unchanged-output check.
+
+Both preregistered descriptive criteria failed. On the six answered cases,
+intent mean rank/regret was **3.4444/1.6111**, midpoint **2.7778/0.9444**, and the
+frozen heuristic **4.0556/2.2222**. Intent beat the frozen heuristic but lost to
+midpoint, recording **1 win, 2 ties and 3 losses** against midpoint. Answered
+forced-choice regret **1.6111** was not lower than abstained-case forced-choice
+regret **1.5417**. Abstention therefore did not isolate harder forced-choice
+cases. This is a negative/mixed preregistered result, with no claim of calibrated
+abstention, generalization, artist usability or successful intent-based
+recommendation. Coverage is still designed coverage on procedural cases.
+
+The saved GPU summary incorrectly says “CPU values are validation only”. That
+historical artifact is preserved. A reporting-only correction now labels local
+RIFE runs as GPU experimental results and CPU/injected runs as validation-only,
+using execution provenance rather than the requested backend name. Regression
+coverage uses synthetic criterion values and injected crossfade data only.
+`INTENT_GUIDANCE_PROTOCOL.md` remains byte-for-byte frozen, as do cases, intent
+mappings, abstention rules, candidate data and metrics. No GPU inference or
+metric recalculation was performed during closure.
+
+Closure validation in the existing `.venv`: **75 passed, 1 skipped** (existing
+CUDA-dependent mocked OOM test); the real-model import guard remained active.
+`pip check`, compilation of `inbetween`, `tests` and `scripts`, and
+`git diff --check` passed. CPU sample export `20260921T172838-86518899` completed.
+Read-only pixel verification independently confirmed all 200 saved authoritative
+frame comparisons against saved ground truth; all 70 run manifests record
+`cuda:0`. Preregistered source hashes matched the original HEAD above. All 939
+GPU output files remained byte-for-byte unchanged. No merge or tag is part of
+this closure.

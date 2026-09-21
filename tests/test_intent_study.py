@@ -201,3 +201,25 @@ def test_success_criteria_strict_ties_and_paired_differences(full):
             if p['policy']=='forced_choice_intent_ablation':
                 p['regret'] = 1
     assert all(v is False for v in intent_study.summarize(cases)['criteria'].values())
+
+
+@pytest.mark.parametrize('execution_kind, expected', [
+    ('local_rife_evaluation', 'GPU experimental results'),
+    ('cpu_validation', 'CPU/injected runs are validation-only'),
+    ('injected_backend_validation', 'CPU/injected runs are validation-only'),
+])
+def test_criteria_description_uses_execution_provenance(execution_kind, expected):
+    # Exercise GPU reporting with synthetic values only; never invoke inference.
+    criteria = {'placement_lower_regret_than_both_baselines': False,
+                'answered_lower_forced_choice_regret_than_abstained': False}
+    line = intent_study.criteria_description(execution_kind, criteria)
+    assert line == f'Descriptive criteria ({expected}): {criteria}'
+
+
+def test_injected_rife_summary_is_validation_only(full):
+    root, result, _ = full
+    assert result['backend'] == 'rife'
+    assert result['execution_kind'] == 'injected_backend_validation'
+    summary = (root/'summary.md').read_text()
+    assert 'Descriptive criteria (CPU/injected runs are validation-only):' in summary
+    assert 'GPU experimental results' not in summary

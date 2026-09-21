@@ -121,10 +121,27 @@ CPU implementation validation (use a fresh output directory):
 .venv/bin/python -m inbetween.intent_study --backend crossfade --output outputs/intent-guidance-cpu-v1
 ```
 
-Later, separately in normal WSL with the local RTX 4050 and pinned RIFE assets:
+Milestone 6 is closed as a **negative/mixed preregistered GPU result** from
+`outputs/intent-guidance-rife-v1` (`execution_kind: local_rife_evaluation`).
+All 60/60 candidates succeeded, coverage was 6/10, all 10 cases were rankable,
+and all authoritative A/D/B checks were exact. All 82 JSON files parsed strictly.
 
-```bash
-.venv/bin/python -m inbetween.intent_study --backend rife --output outputs/intent-guidance-rife-v1
-```
+On the six answered cases (lower is better):
 
-The preregistered implementation includes no Milestone 6 GPU effectiveness result.
+| Policy | Mean rank | Mean regret |
+|---|---:|---:|
+| Intent | 3.4444 | 1.6111 |
+| Midpoint | 2.7778 | 0.9444 |
+| Frozen heuristic | 4.0556 | 2.2222 |
+
+**Both preregistered descriptive criteria failed.** Intent beat the frozen
+heuristic but lost to midpoint, with 1 win, 2 ties and 3 losses against midpoint.
+Answered forced-choice regret (1.6111) was not lower than abstained-case
+forced-choice regret (1.5417): abstention did not isolate harder forced-choice
+cases. These results do not establish calibrated abstention, generalization,
+artist usability, or successful intent-based recommendation.
+
+The original GPU output is preserved, including its erroneous “CPU values are
+validation only” summary label. The reporting code now labels CPU/injected runs
+as validation-only and local RIFE runs as GPU experimental results. No experiment,
+metric or frozen protocol was revised; see the [closure record](docs/RESEARCH_LOG.md).

@@ -138,6 +138,13 @@ def summarize(cases):
             'interpretation': 'Criteria are descriptive; CPU/fake-backend values are not RIFE effectiveness evidence.'}
 
 
+def criteria_description(execution_kind, criteria):
+    """Label evidence by execution provenance, including injected RIFE runs."""
+    evidence = ('GPU experimental results' if execution_kind == 'local_rife_evaluation'
+                else 'CPU/injected runs are validation-only')
+    return f"Descriptive criteria ({evidence}): {criteria}"
+
+
 def run_intent_study(output='outputs/intent-guidance-study', backend='rife', backend_factory=None):
     root = Path(output)
     if root.exists() and any(root.iterdir()):
@@ -182,7 +189,7 @@ def run_intent_study(output='outputs/intent-guidance-study', backend='rife', bac
              f"rankable answered: {summary['rankable_answered_cases']}/{summary['answered_cases']}; "
              f"rankable total: {summary['rankable_total_cases']}/{summary['total_cases']}.",
              f"Abstention reasons: {summary['abstention_reasons']}",
-             f"Descriptive criteria (CPU values are validation only): {summary['criteria']}", '']
+             criteria_description(result['execution_kind'], summary['criteria']), '']
     coverage = [{k: v for k, v in summary.items() if k not in ('aggregates', 'comparisons', 'criteria', 'interpretation', 'abstention_reasons')}]
     for filename, rows in [('coverage',coverage), ('decisions',decisions), ('aggregates',summary['aggregates']),
                            ('comparisons',summary['comparisons']), ('policy_comparison',policies), ('candidates',candidates)]:
