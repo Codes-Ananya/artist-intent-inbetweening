@@ -272,3 +272,45 @@ frame comparisons against saved ground truth; all 70 run manifests record
 `cuda:0`. Preregistered source hashes matched the original HEAD above. All 939
 GPU output files remained byte-for-byte unchanged. No merge or tag is part of
 this closure.
+
+## 2026-09-22: Milestone 7 protocol and dataset infrastructure preparation
+
+Verified clean `main`, fetched `origin/main --tags`, and confirmed HEAD,
+origin/main and the peeled annotated `milestone-6-intent-guidance` tag all resolve
+to `bc09d3b84e4e6b105f209afb57e38fe048764eb5`. Created
+`feature/real-input-pilot`. The tag object's own hash differs from its target
+commit as expected for an annotated tag.
+
+Drafted `REAL_INPUT_PILOT_PROTOCOL.md`: Track A is six complete original hybrid
+artist-controlled sequences, eight authoritative frames each and one recurring
+character; Track D is four AI-generated exploratory triplets excluded from
+primary averages and research claims. Specified canonical asset paths, provenance,
+rights and preprocessing records, pre-result artist D/k choice, review/freeze
+gates, matched generated-only comparison, primary metric definitions, secondary
+metrics, descriptive criteria and limitations. The character remains provisional.
+
+Added strict validated JSON templates and a dependency-free read-only dataset
+validator. Full validation requires 60 input frames across ten sequences;
+partial ingestion is explicitly labelled. Checks cover manifest fields/types,
+PNG dimensions/mode/transparency/animation, file and decoded-pixel duplicates,
+SHA-256 consistency, D/frame-k identity, track provenance/purpose separation,
+consent declarations, unexpected entries and symlinks. Source archive evidence
+and declarations still require human verification. No interpolation runner or
+new metric implementation was added. Existing backends, experiments, stored
+results and frozen earlier protocols remain unchanged.
+
+Validation in the existing `.venv`: **146 passed, 1 skipped**, including **71 new
+schema/ingest tests**. The skip is the existing CUDA-dependent mocked OOM test;
+the existing real-RIFE import guard remains active. Tests use temporary,
+explicitly labelled synthetic geometric fixtures only, never primary data.
+`pip check` and `git diff --check` passed. Sample export packaged the two existing
+synthetic sample PNGs into `/tmp/milestone7-existing-sample-export.zip`, verified
+ZIP integrity and SHA-256 equality of both archived/source files, and left the
+sources unchanged. It did not generate intermediate images or call any backend.
+
+No RIFE execution, AI image generation, pilot dataset creation, model download,
+cloud service, new dependency or experimental result was produced. The remaining
+artist/design/rights decisions, annotation logistics, descriptive target review,
+and Track D generation choices are listed in the protocol. Actual collection,
+freeze, metric implementation and evaluation remain future work. This change is
+for the feature branch only; no merge or tag.

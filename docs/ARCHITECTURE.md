@@ -39,3 +39,20 @@ hashes before inference, runs one endpoint sequence and six one-D candidates per
 case through existing orchestration, and reuses Milestone 5 metrics/ranking.
 Reports separate selective and full-suite policy intersections, completeness,
 coverage, and failures. Existing backends, heuristic, runner and UI are unchanged.
+
+## Milestone 7 preparation: real-input pilot ingestion
+
+`pilot_dataset.py` is a read-only, CPU-only manifest and image validator with no
+backend imports. It uses the existing Pillow dependency and standard library;
+`docs/real_input_templates/` contains strict validated templates for sequence,
+frame, generation, selection, preprocessing and rights records. Actual sources
+and datasets live under ignored `.local/real_input_pilot/`; no pilot assets are
+shipped. Track A has six complete eight-frame artist sequences and Track D four
+AI exploratory triplets, with distinct paths, purposes and rosters. Global byte
+and decoded-pixel duplicate checks prevent accidental reuse between tracks.
+
+The [pilot protocol](REAL_INPUT_PILOT_PROTOCOL.md) defines future comparison and
+metrics, frozen D/k decisions and review gates. Ingest completeness is separate
+from evaluation readiness. There is no new interpolation method, evaluation
+runner, UI, landmark annotator or change to existing metrics/backends. The future
+comparison must reuse `InterpolationBackend` and existing guided orchestration.

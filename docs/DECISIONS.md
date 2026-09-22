@@ -65,3 +65,27 @@ retain their names. The UI requires manual k and cannot adopt the diagnostic.
   runner, no training/new model/dependency, and CPU-safe tests. Source hashes and
   intent decisions are saved before inference; reject endpoint collisions.
 - Simple mapping is an elicitation diagnostic, not the final research contribution.
+
+## Milestone 7 preparation decisions
+
+- Separate original hybrid artist-controlled Track A from AI-generated exploratory
+  Track D in paths, purpose flags, manifests and all future reports. Only the six
+  complete Track A sequences contribute primary descriptive evidence.
+- Require eight authoritative 512×512 RGB PNGs per A sequence; D holds only three
+  observed images on the same eight-slot timeline. One original recurring A
+  character, rig construction plus manual cleanup, artist D/k before results.
+- Use strict dependency-free validated manifest templates, with per-frame and
+  per-sequence AI disclosures, explicit rights declarations and preprocessing
+  hash chains. Templates are not data; unresolved placeholders fail validation.
+- Reject duplicate bytes/pixels across both tracks and any D/frame-k mismatch.
+  Intentional holds require a prospective policy revision. File validation cannot
+  certify artistic authorship, consent or pre-result selection: review and freeze
+  remain explicit gates.
+- Freeze the comparison and metric definitions in `REAL_INPUT_PILOT_PROTOCOL.md`:
+  matched generated-only indices, separate preservation checks, edge/Chamfer,
+  annotated trajectory and reference-relative temporal residual primary;
+  PSNR/SSIM/optional LPIPS secondary. No new metric execution in this preparation.
+- Keep historical results unchanged. No RIFE, image generation beyond explicitly
+  labelled temporary geometric test fixtures, model downloads, merge or tag.
+  Satisfy the repository sample-export check by archiving existing sample PNGs
+  with verified hashes; no interpolation is needed for this preparation.

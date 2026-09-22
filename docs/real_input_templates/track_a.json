@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "track": "A",
+  "sequence_id": "a01",
+  "purpose": "primary_evaluation",
+  "character_id": "REPLACE_original_character_id",
+  "motion": "REPLACE_artist_motion_description",
+  "provenance": {
+    "creator": "REPLACE_creator",
+    "created_at": "REPLACE_ISO8601_with_timezone",
+    "method": "rig_assisted_manual_cleanup",
+    "tools": [
+      "REPLACE_tools_versions_and_rig_origin"
+    ],
+    "authorship_status": "REPLACE_authorship_declaration",
+    "source_files": [
+      "REPLACE_retained_original_source_archive_reference"
+    ]
+  },
+  "rights": {
+    "holder": "REPLACE_rights_holder",
+    "usage_basis": "REPLACE_permission_scope_and_license",
+    "consent_status": "REPLACE_confirmed_or_not_required",
+    "consent_basis": "REPLACE_evidence_reference_or_not_required_reason",
+    "confirmed_by": "REPLACE_reviewer",
+    "confirmed_at": "REPLACE_ISO8601_with_timezone"
+  },
+  "ai_generation": null,
+  "selection": {
+    "kind": "artist",
+    "k": 3,
+    "D_path": "frames/frame_003.png",
+    "D_sha256": "REPLACE_sha256",
+    "selected_by": "REPLACE_selector",
+    "selected_at": "REPLACE_ISO8601_with_timezone",
+    "before_model_results": true,
+    "rationale": "REPLACE_motion_intent_and_selection_reason"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "path": "frames/frame_000.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 1,
+      "path": "frames/frame_001.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 2,
+      "path": "frames/frame_002.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 3,
+      "path": "frames/frame_003.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 4,
+      "path": "frames/frame_004.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 5,
+      "path": "frames/frame_005.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 6,
+      "path": "frames/frame_006.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    },
+    {
+      "index": 7,
+      "path": "frames/frame_007.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "rig_assisted_manual_cleanup",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": null
+    }
+  ]
+}

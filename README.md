@@ -145,3 +145,20 @@ The original GPU output is preserved, including its erroneous “CPU values are
 validation only” summary label. The reporting code now labels CPU/injected runs
 as validation-only and local RIFE runs as GPU experimental results. No experiment,
 metric or frozen protocol was revised; see the [closure record](docs/RESEARCH_LOG.md).
+
+## Milestone 7: real-input pilot preparation
+
+The [Real-Input Artist-Controlled Pilot protocol](docs/REAL_INPUT_PILOT_PROTOCOL.md)
+separates six original artist-controlled sequences (primary Track A) from four
+AI-generated exploratory triplets (Track D). This milestone currently provides
+protocol, provenance templates and a CPU-only ingest validator; no pilot assets
+or results have been collected or generated.
+
+```bash
+.venv/bin/python -m inbetween.pilot_dataset .local/real_input_pilot/dataset --partial
+```
+
+Omit `--partial` to require the complete roster. Passing ingestion is not approval
+for evaluation: artist selection, rights, annotations and freeze review remain
+pre-inference gates. Templates and directory conventions are linked in the
+protocol; actual data stays local under ignored `.local/`.

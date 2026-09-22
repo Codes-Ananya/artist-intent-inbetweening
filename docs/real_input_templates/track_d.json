@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "track": "D",
+  "sequence_id": "d01",
+  "purpose": "exploratory_only",
+  "character_id": "REPLACE_original_character_id",
+  "motion": "curved_arm_reach",
+  "provenance": {
+    "creator": "REPLACE_creator",
+    "created_at": "REPLACE_ISO8601_with_timezone",
+    "method": "ai_generated",
+    "tools": [
+      "REPLACE_tools_versions_and_rig_origin"
+    ],
+    "authorship_status": "REPLACE_authorship_declaration",
+    "source_files": [
+      "REPLACE_retained_original_source_archive_reference"
+    ]
+  },
+  "rights": {
+    "holder": "REPLACE_rights_holder",
+    "usage_basis": "REPLACE_permission_scope_and_license",
+    "consent_status": "REPLACE_confirmed_or_not_required",
+    "consent_basis": "REPLACE_evidence_reference_or_not_required_reason",
+    "confirmed_by": "REPLACE_reviewer",
+    "confirmed_at": "REPLACE_ISO8601_with_timezone"
+  },
+  "ai_generation": {
+    "model": "REPLACE_model_name",
+    "model_version": "REPLACE_exact_version_or_unavailable_explanation",
+    "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
+    "generated_at": "REPLACE_ISO8601_with_timezone",
+    "seed": null,
+    "seed_note": "REPLACE_seed_or_why_unavailable",
+    "edits": [],
+    "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
+    "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+  },
+  "selection": {
+    "kind": "exploratory_curator",
+    "k": 3,
+    "D_path": "frames/frame_003.png",
+    "D_sha256": "REPLACE_sha256",
+    "selected_by": "REPLACE_selector",
+    "selected_at": "REPLACE_ISO8601_with_timezone",
+    "before_model_results": true,
+    "rationale": "REPLACE_motion_intent_and_selection_reason"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "path": "frames/frame_000.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "ai_generated",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": {
+        "model": "REPLACE_model_name",
+        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
+        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
+        "generated_at": "REPLACE_ISO8601_with_timezone",
+        "seed": null,
+        "seed_note": "REPLACE_seed_or_why_unavailable",
+        "edits": [],
+        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
+        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+      }
+    },
+    {
+      "index": 3,
+      "path": "frames/frame_003.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "ai_generated",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": {
+        "model": "REPLACE_model_name",
+        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
+        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
+        "generated_at": "REPLACE_ISO8601_with_timezone",
+        "seed": null,
+        "seed_note": "REPLACE_seed_or_why_unavailable",
+        "edits": [],
+        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
+        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+      }
+    },
+    {
+      "index": 7,
+      "path": "frames/frame_007.png",
+      "sha256": "REPLACE_sha256",
+      "creator": "REPLACE_creator",
+      "created_at": "REPLACE_ISO8601_with_timezone",
+      "method": "ai_generated",
+      "edits": [],
+      "preprocessing": {
+        "source_path": "REPLACE_retained_original_reference",
+        "source_sha256": "REPLACE_sha256",
+        "output_sha256": "REPLACE_sha256",
+        "operations": [],
+        "original_preserved": true,
+        "recorded_by": "REPLACE_operator",
+        "recorded_at": "REPLACE_ISO8601_with_timezone"
+      },
+      "ai_generation": {
+        "model": "REPLACE_model_name",
+        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
+        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
+        "generated_at": "REPLACE_ISO8601_with_timezone",
+        "seed": null,
+        "seed_note": "REPLACE_seed_or_why_unavailable",
+        "edits": [],
+        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
+        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+      }
+    }
+  ]
+}

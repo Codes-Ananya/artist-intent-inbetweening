@@ -76,3 +76,23 @@ intent-based recommendation. No calibrated abstention, generalization or artist
 usability claim is supported. The protocol remains frozen; the historical GPU
 summary's CPU-only label is a reporting error, corrected in code for future
 reports without changing existing output.
+
+## Milestone 7 protocol/infrastructure preparation
+
+- [x] Clean main and freshly fetched origin/main, HEAD and peeled annotated
+  milestone-6-intent-guidance tag verified at
+  `bc09d3b84e4e6b105f209afb57e38fe048764eb5`; feature/real-input-pilot created.
+- [x] Protocol separates four exploratory AI triplets from six original hybrid
+  artist-controlled sequences with eight frames and one recurring character.
+- [x] Directory conventions and validated templates cover sequence/frame
+  provenance, AI disclosure, pre-result D/k selection, preprocessing and rights.
+- [x] Read-only CPU validator checks full/partial rosters, image size/mode/format,
+  duplicates, hashes, k and D identity, provenance and track separation.
+- [x] Frozen future comparison, primary/secondary metric definitions, descriptive
+  criteria and limitations documented without fabricated results.
+- [x] CPU schema/validator tests use explicitly labelled temporary geometric
+  fixtures. No new interpolation method, dependency or model execution.
+- [ ] Collect actual assets, source evidence and artist decisions; verify rights,
+  complete annotation logistics and freeze review before any future evaluation.
+- [ ] Implement/test future landmark and temporal evaluation, then conduct the
+  separately authorized pilot. This is not part of preparation acceptance.
