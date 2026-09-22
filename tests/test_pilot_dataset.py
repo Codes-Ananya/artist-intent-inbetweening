@@ -13,6 +13,7 @@ import sys
 from PIL import Image, ImageDraw, PngImagePlugin
 import pytest
 
+from inbetween import pilot_dataset
 from inbetween.pilot_dataset import (
     ValidationError, event_time, load_manifest, sha256, validate_dataset, validate_manifest,
 )
@@ -241,6 +242,52 @@ def test_event_time_is_not_recording_time(tmp_path):
     m['selection']['selected_at']['value'] = '2026-10-10'
     with pytest.raises(ValidationError, match='after recording'):
         validate_manifest(m)
+
+
+def test_v2_selection_precedes_sequence_creation(tmp_path):
+    _, m = make_sequence(tmp_path, 'D')
+    validate_manifest(m)
+    # Keep every recording after its event; only selection ordering is invalid.
+    m['selection']['selected_at']['value'] = '2026-09-21T09:00:00Z'
+    with pytest.raises(ValidationError, match='^selection precedes sequence creation$'):
+        validate_manifest(m)
+
+
+def test_v2_selection_precedes_d_frame_creation(tmp_path, monkeypatch):
+    _, m = make_sequence(tmp_path, 'D')
+    validate_manifest(m)
+    m['selection']['selected_at']['value'] = '2026-09-21T09:00:00Z'
+    chronological = pilot_dataset.chronological
+    bypassed = []
+
+    def isolate_d_frame_guard(earlier, later, message):
+        # V2 requires equal sequence/frame creation events, so the sequence
+        # guard otherwise masks the redundant D-frame guard. Keep recording
+        # checks and all other validation active, with valid recording times.
+        if message == 'selection precedes sequence creation':
+            bypassed.append(message)
+            return
+        chronological(earlier, later, message)
+
+    monkeypatch.setattr(pilot_dataset, 'chronological', isolate_d_frame_guard)
+    with pytest.raises(ValidationError, match='^selection precedes D creation$'):
+        validate_manifest(m)
+    assert bypassed == ['selection precedes sequence creation']
+
+
+def test_v2_authorized_dataset_redistribution_is_accepted(tmp_path):
+    _, m = make_sequence(tmp_path, 'D')
+    m['rights']['dataset_redistribution'] = 'authorized'
+    validate_manifest(m)
+
+
+def test_v2_other_hosted_generation_is_accepted(tmp_path):
+    _, m = make_sequence(tmp_path, 'D')
+    for g in [m['ai_generation']] + [f['ai_generation'] for f in m['frames']]:
+        g.update(provider='SYNTHETIC hosted provider',
+                 interface='SYNTHETIC hosted image interface',
+                 generation_compute='other_hosted', local_gpu_used=False)
+    validate_manifest(m)
 
 
 @pytest.mark.parametrize('path', ['model_identifier', 'seed', 'inference_settings', 'internal_expanded_prompt'])
