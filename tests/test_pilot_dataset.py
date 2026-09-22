@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, PngImagePlugin
 import pytest
 
 from inbetween.pilot_dataset import (
-    ValidationError, load_manifest, sha256, validate_dataset, validate_manifest,
+    ValidationError, event_time, load_manifest, sha256, validate_dataset, validate_manifest,
 )
 
 TEMPLATES = Path(__file__).resolve().parents[1] / 'docs' / 'real_input_templates'
@@ -84,6 +84,18 @@ def test_full_roster_and_track_separation(tmp_path):
     assert result['frame_count'] == 60
     assert len(result['primary_sequences']) == 6
     assert len(result['exploratory_sequences']) == 4
+
+
+def test_track_d_independent_ingest_still_requires_track_a_for_complete(tmp_path):
+    for number in range(1, 5):
+        make_sequence(tmp_path, 'D', number)
+    result = validate_dataset(tmp_path, complete=False)
+    assert result['exploratory_sequences'] == ['d01', 'd02', 'd03', 'd04']
+    assert result['primary_sequences'] == []
+    assert result['frame_count'] == 12
+    assert result['status'] == 'partial_ingest_only'
+    with pytest.raises(ValidationError, match='missing track_a'):
+        validate_dataset(tmp_path)
 
 
 @pytest.mark.parametrize('k', [0, 7, -1, 3.0, True, '3', None])
@@ -167,8 +179,8 @@ def test_preprocessing_is_explicit(tmp_path):
         validate_manifest(m)
 
 
-@pytest.mark.parametrize('key,value', [('model', ''), ('prompt', ''), ('seed', True),
-                                     ('seed_note', ''), ('usage_basis', ''), ('edits', None)])
+@pytest.mark.parametrize('key,value', [('provider', ''), ('prompt_provenance', {}), ('seed', True),
+                                     ('model_identifier', {}), ('usage_basis', ''), ('human_role', [])])
 def test_generation_disclosure_required_at_both_levels(tmp_path, key, value):
     _, m = make_sequence(tmp_path, 'D')
     for target in ('sequence', 'frame'):
@@ -177,6 +189,135 @@ def test_generation_disclosure_required_at_both_levels(tmp_path, key, value):
         g[key] = value
         with pytest.raises(ValidationError):
             validate_manifest(bad)
+
+
+def test_multiple_usage_authorities_not_ownership(tmp_path):
+    _, m = make_sequence(tmp_path, 'D')
+    r = m['rights']
+    r['authorities'] = ['SYNTHETIC collaborator one', 'SYNTHETIC collaborator two']
+    r['confirmed_by'] = list(r['authorities'])
+    validate_manifest(m)
+    r['confirmed_by'].pop()
+    with pytest.raises(ValidationError, match='authorities must confirm'):
+        validate_manifest(m)
+    r['confirmed_by'] = list(r['authorities'])
+    r['declaration_scope'] = 'legal_ownership'
+    with pytest.raises(ValidationError, match='not ownership'):
+        validate_manifest(m)
+
+
+@pytest.mark.parametrize('precision,value,reason,valid', [
+    ('exact', DATE, None, True),
+    ('date_only', '2026-09-22', None, True),
+    ('unavailable', None, 'SYNTHETIC: event time not retained', True),
+    ('unavailable', None, '', False),
+    ('unavailable', None, '   ', False),
+    ('unavailable', DATE, 'not exposed', False),
+    ('date_only', DATE, None, False),
+    ('date_only', '2026-02-30', None, False),
+    ('exact', '2026-09-22T09:00:00', None, False),
+    ('exact', '2026-09-22', None, False),
+    ('unknown', None, 'missing', False),
+    ('date_only', '2026-09-22', 'contradiction', False),
+])
+def test_timestamp_precision(precision, value, reason, valid):
+    value = dict(precision=precision, value=value, reason=reason, source='SYNTHETIC evidence')
+    if valid:
+        event_time(value, 'test')
+    else:
+        with pytest.raises(ValidationError):
+            event_time(value, 'test')
+
+
+def test_event_time_is_not_recording_time(tmp_path):
+    _, m = make_sequence(tmp_path, 'D')
+    before = copy.deepcopy(m['selection']['selected_at'])
+    m['selection']['recorded_at'] = '2026-10-01T12:00:00Z'
+    validate_manifest(m)
+    assert m['selection']['selected_at'] == before
+    m['selection']['selected_at'] = dict(precision='date_only', value='2026-09-22',
+                                        reason=None, source='SYNTHETIC selection evidence')
+    validate_manifest(m)  # No midnight/zone is assigned to the event.
+    m['selection']['selected_at']['value'] = '2026-10-10'
+    with pytest.raises(ValidationError, match='after recording'):
+        validate_manifest(m)
+
+
+@pytest.mark.parametrize('path', ['model_identifier', 'seed', 'inference_settings', 'internal_expanded_prompt'])
+@pytest.mark.parametrize('damage', ['reason', 'value'])
+def test_unavailable_disclosures_require_reason_and_null(tmp_path, path, damage):
+    _, m = make_sequence(tmp_path, 'D')
+    for g in [m['ai_generation']] + [f['ai_generation'] for f in m['frames']]:
+        v = g['prompt_provenance'][path] if path == 'internal_expanded_prompt' else g[path]
+        v[damage] = '' if damage == 'reason' else 'invented'
+    with pytest.raises(ValidationError):
+        validate_manifest(m)
+
+
+@pytest.mark.parametrize('damage', ['no_instructions', 'internal_kind', 'copy_internal',
+                                   'pending', 'empty_source', 'gpu', 'provider', 'authorship',
+                                   'frame_mismatch', 'event_mismatch', 'no_attestation',
+                                   'authorities', 'usage', 'seed_type', 'future_creation'])
+def test_v2_incomplete_or_contradictory_disclosures(tmp_path, damage):
+    _, m = make_sequence(tmp_path, 'D')
+    g = m['ai_generation']
+    p = g['prompt_provenance']
+    if damage == 'no_instructions':
+        p['conversation_instructions'] = []
+    elif damage == 'internal_kind':
+        p['conversation_instructions'][0]['kind'] = 'internal_generation_prompt'
+    elif damage == 'copy_internal':
+        p['internal_expanded_prompt'] = dict(status='available', reason=None,
+                                             value=p['conversation_instructions'][0]['text'])
+    elif damage == 'pending':
+        p['conversation_instructions'][0]['text'] = 'pending_transcription_from_conversation'
+    elif damage == 'empty_source':
+        p['conversation_instructions'][0]['source'] = ''
+    elif damage == 'gpu':
+        g['local_gpu_used'] = True
+    elif damage == 'provider':
+        g['provider'] = 'contradictory provider'
+    elif damage == 'authorship':
+        g['D_authorship'] = 'independently human-drawn'
+    elif damage == 'frame_mismatch':
+        m['frames'][0]['ai_generation']['seed']['reason'] = 'different source record'
+    elif damage == 'event_mismatch':
+        g['generated_at']['value'] = '2026-09-01T09:00:00Z'
+    elif damage == 'no_attestation':
+        m['selection']['before_model_results_basis'] = ''
+    elif damage == 'authorities':
+        m['rights']['authorities'] = []
+    elif damage == 'usage':
+        m['rights']['permitted_uses'] = ['portfolio_demonstration']
+    elif damage == 'seed_type':
+        g['seed'] = dict(status='available', value=True, reason=None)
+    else:
+        m['provenance']['created_at']['value'] = '2026-10-10T00:00:00Z'
+    with pytest.raises(ValidationError):
+        validate_manifest(m)
+
+
+def test_date_only_and_unavailable_d_do_not_relax_primary(tmp_path):
+    _, d = make_sequence(tmp_path, 'D')
+    event = dict(precision='date_only', value='2026-09-22', reason=None,
+                 source='SYNTHETIC date-only evidence')
+    d['provenance']['created_at'] = copy.deepcopy(event)
+    d['ai_generation']['generated_at'] = copy.deepcopy(event)
+    for f in d['frames']:
+        f['created_at'] = copy.deepcopy(event)
+        f['ai_generation']['generated_at'] = copy.deepcopy(event)
+    d['selection']['selected_at'] = copy.deepcopy(event)
+    validate_manifest(d)
+    d['selection']['selected_at'] = dict(precision='unavailable', value=None,
+                                       reason='SYNTHETIC time not retained', source='SYNTHETIC record')
+    validate_manifest(d)  # The pre-results attestation is still mandatory.
+    _, a = make_sequence(tmp_path, 'A')
+    a['provenance']['created_at'] = event
+    with pytest.raises(ValidationError):
+        validate_manifest(a)
+    a['version'] = 2
+    with pytest.raises(ValidationError, match='Track D only'):
+        validate_manifest(a)
 
 
 @pytest.mark.parametrize('damage', ['missing', 'extra', 'hash', 'size', 'mode', 'format', 'corrupt', 'symlink'])

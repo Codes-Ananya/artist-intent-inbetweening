@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "track": "D",
   "sequence_id": "d01",
   "purpose": "exploratory_only",
@@ -7,34 +7,104 @@
   "motion": "curved_jump",
   "provenance": {
     "creator": "REPLACE_creator",
-    "created_at": "REPLACE_ISO8601_with_timezone",
+    "created_at": {
+      "precision": "exact",
+      "value": "REPLACE_ISO8601_with_timezone",
+      "reason": null,
+      "source": "REPLACE_event_evidence_source"
+    },
     "method": "ai_generated",
     "tools": [
-      "REPLACE_tools_versions_and_rig_origin"
+      "REPLACE_tools"
     ],
-    "authorship_status": "REPLACE_authorship_declaration",
+    "authorship_status": "REPLACE_AI_authorship_declaration",
     "source_files": [
-      "REPLACE_retained_original_source_archive_reference"
-    ]
+      "REPLACE_source_archive"
+    ],
+    "recorded_at": "REPLACE_ISO8601_with_timezone"
   },
   "rights": {
-    "holder": "REPLACE_rights_holder",
-    "usage_basis": "REPLACE_permission_scope_and_license",
+    "authorities": [
+      "REPLACE_usage_authority"
+    ],
+    "capacity": "REPLACE_capacity",
+    "organization": null,
+    "usage_basis": "REPLACE_usage_basis",
     "consent_status": "REPLACE_confirmed_or_not_required",
-    "consent_basis": "REPLACE_evidence_reference_or_not_required_reason",
-    "confirmed_by": "REPLACE_reviewer",
-    "confirmed_at": "REPLACE_ISO8601_with_timezone"
+    "consent_basis": "REPLACE_consent_basis",
+    "confirmed_by": [
+      "REPLACE_usage_authority"
+    ],
+    "confirmed_at": {
+      "precision": "exact",
+      "value": "REPLACE_ISO8601_with_timezone",
+      "reason": null,
+      "source": "REPLACE_event_evidence_source"
+    },
+    "recorded_at": "REPLACE_ISO8601_with_timezone",
+    "evidence_reference": "REPLACE_declaration_reference",
+    "declaration_scope": "project_usage_authority_not_ownership",
+    "permitted_uses": [
+      "academic_research",
+      "evaluation",
+      "publication_figures",
+      "portfolio_demonstration"
+    ],
+    "dataset_redistribution": "not_authorized"
   },
   "ai_generation": {
-    "model": "REPLACE_model_name",
-    "model_version": "REPLACE_exact_version_or_unavailable_explanation",
-    "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
-    "generated_at": "REPLACE_ISO8601_with_timezone",
-    "seed": null,
-    "seed_note": "REPLACE_seed_or_why_unavailable",
-    "edits": [],
-    "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
-    "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+    "provider": "OpenAI",
+    "interface": "ChatGPT image generation",
+    "model_identifier": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "REPLACE_unavailability_reason"
+    },
+    "seed": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "REPLACE_unavailability_reason"
+    },
+    "inference_settings": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "REPLACE_unavailability_reason"
+    },
+    "prompt_provenance": {
+      "conversation_instructions": [
+        {
+          "kind": "researcher_instruction",
+          "text": "REPLACE_recovered_instruction",
+          "source": "REPLACE_conversation_reference",
+          "scope": "REPLACE_scope"
+        }
+      ],
+      "internal_expanded_prompt": {
+        "status": "unavailable",
+        "value": null,
+        "reason": "REPLACE_unavailability_reason"
+      },
+      "history_status": "partial",
+      "history_note": "REPLACE_history_completeness_and_limitations"
+    },
+    "generated_at": {
+      "precision": "exact",
+      "value": "REPLACE_ISO8601_with_timezone",
+      "reason": null,
+      "source": "REPLACE_event_evidence_source"
+    },
+    "local_gpu_used": false,
+    "generation_compute": "OpenAI-hosted",
+    "D_authorship": "AI-generated and researcher-selected, not independently human-drawn",
+    "human_role": [
+      "character direction",
+      "motion specification",
+      "iterative review",
+      "correction requests",
+      "visual selection",
+      "approval"
+    ],
+    "usage_basis": "REPLACE_usage_basis"
   },
   "selection": {
     "kind": "exploratory_curator",
@@ -42,9 +112,16 @@
     "D_path": "frames/frame_003.png",
     "D_sha256": "REPLACE_sha256",
     "selected_by": "REPLACE_selector",
-    "selected_at": "REPLACE_ISO8601_with_timezone",
+    "selected_at": {
+      "precision": "exact",
+      "value": "REPLACE_ISO8601_with_timezone",
+      "reason": null,
+      "source": "REPLACE_event_evidence_source"
+    },
     "before_model_results": true,
-    "rationale": "REPLACE_motion_intent_and_selection_reason"
+    "rationale": "REPLACE_selection_rationale",
+    "recorded_at": "REPLACE_ISO8601_with_timezone",
+    "before_model_results_basis": "REPLACE_pre_results_evidence"
   },
   "frames": [
     {
@@ -52,11 +129,16 @@
       "path": "frames/frame_000.png",
       "sha256": "REPLACE_sha256",
       "creator": "REPLACE_creator",
-      "created_at": "REPLACE_ISO8601_with_timezone",
+      "created_at": {
+        "precision": "exact",
+        "value": "REPLACE_ISO8601_with_timezone",
+        "reason": null,
+        "source": "REPLACE_event_evidence_source"
+      },
       "method": "ai_generated",
       "edits": [],
       "preprocessing": {
-        "source_path": "REPLACE_retained_original_reference",
+        "source_path": "REPLACE_source_path",
         "source_sha256": "REPLACE_sha256",
         "output_sha256": "REPLACE_sha256",
         "operations": [],
@@ -65,15 +147,58 @@
         "recorded_at": "REPLACE_ISO8601_with_timezone"
       },
       "ai_generation": {
-        "model": "REPLACE_model_name",
-        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
-        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
-        "generated_at": "REPLACE_ISO8601_with_timezone",
-        "seed": null,
-        "seed_note": "REPLACE_seed_or_why_unavailable",
-        "edits": [],
-        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
-        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+        "provider": "OpenAI",
+        "interface": "ChatGPT image generation",
+        "model_identifier": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "seed": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "inference_settings": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "prompt_provenance": {
+          "conversation_instructions": [
+            {
+              "kind": "researcher_instruction",
+              "text": "REPLACE_recovered_instruction",
+              "source": "REPLACE_conversation_reference",
+              "scope": "REPLACE_scope"
+            }
+          ],
+          "internal_expanded_prompt": {
+            "status": "unavailable",
+            "value": null,
+            "reason": "REPLACE_unavailability_reason"
+          },
+          "history_status": "partial",
+          "history_note": "REPLACE_history_completeness_and_limitations"
+        },
+        "generated_at": {
+          "precision": "exact",
+          "value": "REPLACE_ISO8601_with_timezone",
+          "reason": null,
+          "source": "REPLACE_event_evidence_source"
+        },
+        "local_gpu_used": false,
+        "generation_compute": "OpenAI-hosted",
+        "D_authorship": "AI-generated and researcher-selected, not independently human-drawn",
+        "human_role": [
+          "character direction",
+          "motion specification",
+          "iterative review",
+          "correction requests",
+          "visual selection",
+          "approval"
+        ],
+        "usage_basis": "REPLACE_usage_basis"
       }
     },
     {
@@ -81,11 +206,16 @@
       "path": "frames/frame_003.png",
       "sha256": "REPLACE_sha256",
       "creator": "REPLACE_creator",
-      "created_at": "REPLACE_ISO8601_with_timezone",
+      "created_at": {
+        "precision": "exact",
+        "value": "REPLACE_ISO8601_with_timezone",
+        "reason": null,
+        "source": "REPLACE_event_evidence_source"
+      },
       "method": "ai_generated",
       "edits": [],
       "preprocessing": {
-        "source_path": "REPLACE_retained_original_reference",
+        "source_path": "REPLACE_source_path",
         "source_sha256": "REPLACE_sha256",
         "output_sha256": "REPLACE_sha256",
         "operations": [],
@@ -94,15 +224,58 @@
         "recorded_at": "REPLACE_ISO8601_with_timezone"
       },
       "ai_generation": {
-        "model": "REPLACE_model_name",
-        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
-        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
-        "generated_at": "REPLACE_ISO8601_with_timezone",
-        "seed": null,
-        "seed_note": "REPLACE_seed_or_why_unavailable",
-        "edits": [],
-        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
-        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+        "provider": "OpenAI",
+        "interface": "ChatGPT image generation",
+        "model_identifier": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "seed": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "inference_settings": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "prompt_provenance": {
+          "conversation_instructions": [
+            {
+              "kind": "researcher_instruction",
+              "text": "REPLACE_recovered_instruction",
+              "source": "REPLACE_conversation_reference",
+              "scope": "REPLACE_scope"
+            }
+          ],
+          "internal_expanded_prompt": {
+            "status": "unavailable",
+            "value": null,
+            "reason": "REPLACE_unavailability_reason"
+          },
+          "history_status": "partial",
+          "history_note": "REPLACE_history_completeness_and_limitations"
+        },
+        "generated_at": {
+          "precision": "exact",
+          "value": "REPLACE_ISO8601_with_timezone",
+          "reason": null,
+          "source": "REPLACE_event_evidence_source"
+        },
+        "local_gpu_used": false,
+        "generation_compute": "OpenAI-hosted",
+        "D_authorship": "AI-generated and researcher-selected, not independently human-drawn",
+        "human_role": [
+          "character direction",
+          "motion specification",
+          "iterative review",
+          "correction requests",
+          "visual selection",
+          "approval"
+        ],
+        "usage_basis": "REPLACE_usage_basis"
       }
     },
     {
@@ -110,11 +283,16 @@
       "path": "frames/frame_007.png",
       "sha256": "REPLACE_sha256",
       "creator": "REPLACE_creator",
-      "created_at": "REPLACE_ISO8601_with_timezone",
+      "created_at": {
+        "precision": "exact",
+        "value": "REPLACE_ISO8601_with_timezone",
+        "reason": null,
+        "source": "REPLACE_event_evidence_source"
+      },
       "method": "ai_generated",
       "edits": [],
       "preprocessing": {
-        "source_path": "REPLACE_retained_original_reference",
+        "source_path": "REPLACE_source_path",
         "source_sha256": "REPLACE_sha256",
         "output_sha256": "REPLACE_sha256",
         "operations": [],
@@ -123,15 +301,58 @@
         "recorded_at": "REPLACE_ISO8601_with_timezone"
       },
       "ai_generation": {
-        "model": "REPLACE_model_name",
-        "model_version": "REPLACE_exact_version_or_unavailable_explanation",
-        "prompt": "REPLACE_full_prompt_and_settings_for_joint_triplet",
-        "generated_at": "REPLACE_ISO8601_with_timezone",
-        "seed": null,
-        "seed_note": "REPLACE_seed_or_why_unavailable",
-        "edits": [],
-        "authorship_status": "REPLACE_AI_generated_with_human_edits_if_any",
-        "usage_basis": "REPLACE_terms_license_and_evidence_reference"
+        "provider": "OpenAI",
+        "interface": "ChatGPT image generation",
+        "model_identifier": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "seed": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "inference_settings": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "REPLACE_unavailability_reason"
+        },
+        "prompt_provenance": {
+          "conversation_instructions": [
+            {
+              "kind": "researcher_instruction",
+              "text": "REPLACE_recovered_instruction",
+              "source": "REPLACE_conversation_reference",
+              "scope": "REPLACE_scope"
+            }
+          ],
+          "internal_expanded_prompt": {
+            "status": "unavailable",
+            "value": null,
+            "reason": "REPLACE_unavailability_reason"
+          },
+          "history_status": "partial",
+          "history_note": "REPLACE_history_completeness_and_limitations"
+        },
+        "generated_at": {
+          "precision": "exact",
+          "value": "REPLACE_ISO8601_with_timezone",
+          "reason": null,
+          "source": "REPLACE_event_evidence_source"
+        },
+        "local_gpu_used": false,
+        "generation_compute": "OpenAI-hosted",
+        "D_authorship": "AI-generated and researcher-selected, not independently human-drawn",
+        "human_role": [
+          "character direction",
+          "motion specification",
+          "iterative review",
+          "correction requests",
+          "visual selection",
+          "approval"
+        ],
+        "usage_basis": "REPLACE_usage_basis"
       }
     }
   ]

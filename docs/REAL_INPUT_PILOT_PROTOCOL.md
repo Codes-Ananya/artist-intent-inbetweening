@@ -33,8 +33,8 @@ exploratory input; provider/tool: OpenAI image generation through ChatGPT.
 The human role was motion specification, iterative visual review and approval.
 D does not represent independently human-authored intent. Track D remains
 excluded from primary Track A research claims. Local normalized assets and
-manifests remain draft/unfrozen pending provenance completion and the complete
-dataset freeze; unknown
+manifests remain draft/unfrozen pending researcher review of the corrected
+provenance records and the complete dataset freeze; unknown
 timestamps, prompts, rights evidence and timing choices must not be fabricated
 to obtain a passing validation report.
 
@@ -51,10 +51,13 @@ Researcher visual review approved all 12 normalized Track D frames on
   framing preserves motion coordinates and avoids per-frame recentering.
 - No additional cropping, scaling, retouching or generation is authorized.
 
-This visual approval does not resolve missing provenance timestamps, rights
-holder/confirmation, or prompt transcription and generation-history disclosure.
-Those fields remain unresolved; no substitute timestamps or rights confirmations
-are inferred from approval. Track A and the complete dataset freeze remain
+Visual approval is distinct from provenance and usage confirmation. A subsequent
+authorized researcher declaration supplies project usage authority, and the
+Track D version 2 contract records date-only historical events, recovered
+conversation excerpts, and explicitly unavailable internal generation metadata.
+Complete generation history is not claimed. Corrected local manifests remain
+proposed records for researcher review; no timestamps or ownership claims are
+inferred from visual approval. Track A and the complete dataset freeze remain
 pending. RIFE must not run yet.
 
 These serve engineering validation and portfolio demonstration only. They have
@@ -131,7 +134,13 @@ fill every `REPLACE_` value. The sample k=3 is illustrative, not an artist decis
 These are **validated manifest templates**, not JSON Schema documents or actual
 provenance. Their executable contract is `validate_manifest` in
 `inbetween/pilot_dataset.py`; unknown/missing fields, wrong types and unresolved
-placeholders are errors. Empty edit/operation lists explicitly mean none.
+placeholders are errors. Empty edit/operation lists explicitly mean none within
+their declared scope; incomplete AI correction history must be disclosed in
+Track D's prompt provenance, never represented as a complete empty history.
+
+The table below describes the original version 1 contract, still required for
+Track A and readable for legacy Track D records. New Track D records use the
+version 2 corrections described immediately below it.
 
 | Section | Required fields |
 | --- | --- |
@@ -143,15 +152,73 @@ placeholders are errors. Empty edit/operation lists explicitly mean none.
 | Preprocessing | source_path, source_sha256, output_sha256, operations, original_preserved=true, recorded_by, recorded_at |
 | Rights/consent | holder, usage_basis, consent_status (confirmed or not_required), consent_basis, confirmed_by, confirmed_at |
 
-All timestamps use ISO 8601 with timezone, all file hashes lowercase SHA-256.
+Version 1 timestamps use ISO 8601 with timezone; all file hashes use lowercase SHA-256.
 Rights scope must cover local evaluation and separately state whether portfolio
 publication and dataset sharing are allowed. Record creator and any depicted
 person's consent when applicable; for a wholly fictional original character,
-`not_required` needs a reason. Include license/terms version/date and retained
-evidence references; the validator checks completeness, not legal validity.
+`not_required` needs a reason. When citing license/terms as the usage basis,
+include their version/date and retained evidence references. Version 2 also
+supports an explicit researcher project-usage declaration as described below;
+the validator checks completeness, not legal validity.
 Source paths are archive references, not paths opened by the validator. Reviewers
 must verify originals, source hashes and evidence manually before freeze. Do not
 put private consent documents or credentials in Git or public exports.
+
+### Track D version 2 provenance correction
+
+Version 2 is restricted to exploratory Track D; it does not relax Track A.
+The generic Track D template is the complete field contract. No personal rights
+declaration or actual dataset manifest is tracked.
+
+- Historical `provenance.created_at`, frame `created_at`, generation
+  `generated_at`, `selection.selected_at` and `rights.confirmed_at` are objects
+  with `precision`, `value`, `reason`, `source`. Precision is `exact`
+  (timezone-aware ISO timestamp), `date_only` (YYYY-MM-DD, no invented timezone),
+  or `unavailable` (null value and nonempty reason). Available event values have
+  null reason. Evidence source is always required.
+- Exact `provenance.recorded_at` records authorship of the current provenance
+  record; `selection.recorded_at` preserves when the selection record was
+  originally authored; `rights.recorded_at` records declaration authorship.
+  `selection.selected_at` means the historical selection event, never authoring
+  time. Original preprocessing fields remain unchanged. Frame source-creation
+  events inherit the triptych generation event; normalization is separate.
+- Chronology rejects provably reversed events using conservative possible-time
+  bounds. Date-only events have no known timezone; overlapping bounds or
+  unavailable events cannot establish order. No bounds are written as event
+  timestamps. `before_model_results=true` and a nonempty
+  `before_model_results_basis` are both required. Reviewers must assess evidence;
+  a same-day date alone cannot prove pre-inference selection.
+- Generation records separate `provider`, `interface`, `model_identifier`,
+  `seed`, `inference_settings`, `generated_at`, `local_gpu_used`,
+  `generation_compute`, `D_authorship`, `human_role`, `usage_basis` and
+  `prompt_provenance`. Nullable metadata uses `{status, value, reason}`:
+  unavailable requires null value and nonempty reason; available requires a
+  typed value and null reason. Hosted generation cannot claim local GPU use.
+- Prompt provenance separates `conversation_instructions` (kind, text, source,
+  scope) from `internal_expanded_prompt`. Kinds distinguish researcher
+  instructions, approvals and explicitly labelled approval summaries. A
+  partial/complete `history_status` and explanatory `history_note` describe
+  coverage. Recovered excerpts are not an assertion of full transcript,
+  per-output message mapping or internal tool prompts. Pending markers and
+  conversation text substituted for an internal prompt are rejected.
+- Rights record multiple named `authorities` and matching `confirmed_by`,
+  capacity, nullable organization, declared usage basis, permitted uses,
+  dataset-redistribution scope, consent status/basis, event and recording times,
+  and an evidence reference. `declaration_scope` must be
+  `project_usage_authority_not_ownership`. This implements the authorized
+  researcher decision to document project usage authority, not to guess legal
+  ownership. Research/evaluation permissions are required; publication figures
+  and portfolio uses are explicit. Dataset redistribution is not implied.
+- Sequence/frame generation disclosures and creation events must agree for
+  the triptych-derived frames. Source hashes, frame hashes and preprocessing
+  checks remain mandatory. Evidence references are reviewed manually, not
+  authenticated by the validator. Missing declarations cannot be waived by an
+  unavailable-model flag.
+
+Known unexposed model/settings/internal prompts are reproducibility limitations,
+not values to invent. Partial conversation history can be honestly ingested;
+its sufficiency for exploratory use requires researcher review. A successful
+version 2 validation certifies structural ingestion only, never a dataset freeze.
 
 ## Validation and freezing gates
 
@@ -295,8 +362,9 @@ supports engineering demonstrations only. Negative/mixed outcomes are retained.
   review; implement and test landmark/temporal evaluation before any pilot run.
 - Confirm or prospectively amend the proposed descriptive target; deliberate held
   frames need a versioned duplicate policy before freezing assets.
-- Track D generation model/terms, prompt transcription, missing provenance
-  timestamps and rights confirmation (visual approval is complete),
+- Researcher review of corrected Track D version 2 provenance and local usage
+  declaration, including date precision and partial conversation-history limits
+  (visual approval is complete),
   optional existing-local LPIPS availability, and the future run environment.
 
 These are preparation gates, not permission to begin generation or evaluation.

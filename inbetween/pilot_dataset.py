@@ -5,7 +5,7 @@ Template placeholders deliberately fail validation. Only real ingest records
 or explicitly labelled synthetic test records may pass.
 """
 import argparse
-from datetime import datetime
+from datetime import date, datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -69,6 +69,126 @@ def generation_record(g):
     texts(g['edits'], 'ai_generation.edits')
 
 
+def event_time(value, where):
+    """Validate evidence precision; return possible UTC bounds, never invented times.
+
+    Date-only bounds conservatively allow UTC offsets from -12 to +14 hours.
+    They are comparison bounds only, never recorded as event timestamps.
+    """
+    fields(value, 'precision value reason source', where)
+    text(value['source'], f'{where}.source')
+    precision = value['precision']
+    require(precision in ('exact', 'date_only', 'unavailable'), f'{where}: invalid precision')
+    if precision == 'unavailable':
+        require(value['value'] is None, f'{where}: unavailable value must be null')
+        text(value['reason'], f'{where}.reason')
+        return None
+    require(value['reason'] is None, f'{where}: available event must not have unavailable reason')
+    if precision == 'exact':
+        moment = timestamp(value['value'], where)
+        return moment, moment
+    require(isinstance(value['value'], str) and
+            re.fullmatch(r'\d{4}-\d{2}-\d{2}', value['value']), f'{where}: expected date only')
+    try:
+        day = date.fromisoformat(value['value'])
+        start = datetime.combine(day, datetime.min.time(), timezone.utc)
+        return start - timedelta(hours=14), start + timedelta(days=1, hours=12)
+    except (ValueError, OverflowError) as exc:
+        raise ValidationError(f'{where}: invalid date') from exc
+
+
+def chronological(earlier, later, message):
+    # Overlap or unavailable evidence does not prove ordering. The separate
+    # pre-results attestation is mandatory for Track D regardless of precision.
+    if earlier is not None and later is not None:
+        require(earlier[0] <= later[1], message)
+
+
+def check_recorded(event, recorded, where):
+    moment = timestamp(recorded, f'{where}.recorded_at')
+    chronological(event_time(event, where), (moment, moment),
+                  f'{where}: event occurs after recording')
+
+
+def disclosed_value(v, where, kind=str):
+    fields(v, 'status value reason', where)
+    require(v['status'] in ('available', 'unavailable'), f'{where}: invalid availability')
+    if v['status'] == 'unavailable':
+        require(v['value'] is None, f'{where}: unavailable value must be null')
+        text(v['reason'], f'{where}.reason')
+    else:
+        require(v['reason'] is None, f'{where}: available value has unavailable reason')
+        if kind is str:
+            text(v['value'], where)
+        else:
+            require(type(v['value']) is kind, f'{where}: invalid value type')
+            if kind is dict:
+                require(bool(v['value']), f'{where}: empty settings')
+
+
+def rights_v2(r):
+    fields(r, 'authorities capacity organization usage_basis consent_status consent_basis '
+           'confirmed_by confirmed_at recorded_at evidence_reference declaration_scope '
+           'permitted_uses dataset_redistribution', 'rights')
+    for key in ('authorities', 'confirmed_by', 'permitted_uses'):
+        texts(r[key], f'rights.{key}', nonempty=True)
+        require(len(set(r[key])) == len(r[key]), f'rights.{key}: duplicate entries')
+    require(set(r['confirmed_by']) == set(r['authorities']), 'rights: authorities must confirm')
+    for key in ('capacity', 'usage_basis', 'consent_basis', 'evidence_reference'):
+        text(r[key], f'rights.{key}')
+    if r['organization'] is not None:
+        text(r['organization'], 'rights.organization')
+    require(r['declaration_scope'] == 'project_usage_authority_not_ownership',
+            'rights: declaration is project usage authority, not ownership')
+    require(r['consent_status'] in ('confirmed', 'not_required'), 'rights: unresolved consent')
+    require(set(r['permitted_uses']) >= {'academic_research', 'evaluation'},
+            'rights: research and evaluation usage required')
+    require(r['dataset_redistribution'] in ('not_authorized', 'authorized'),
+            'rights: explicit dataset redistribution scope required')
+    check_recorded(r['confirmed_at'], r['recorded_at'], 'rights')
+
+
+def generation_v2(g):
+    fields(g, 'provider interface model_identifier seed inference_settings prompt_provenance '
+           'generated_at local_gpu_used generation_compute D_authorship human_role '
+           'usage_basis', 'ai_generation')
+    for key in ('provider', 'interface', 'usage_basis'):
+        text(g[key], f'ai_generation.{key}')
+    event_time(g['generated_at'], 'ai_generation.generated_at')
+    for key, kind in (('model_identifier', str), ('seed', int), ('inference_settings', dict)):
+        disclosed_value(g[key], f'ai_generation.{key}', kind)
+    require(type(g['local_gpu_used']) is bool, 'local_gpu_used must be boolean')
+    require(g['generation_compute'] in ('OpenAI-hosted', 'local', 'other_hosted'),
+            'invalid generation compute')
+    require(not g['local_gpu_used'] or g['generation_compute'] == 'local',
+            'hosted generation contradicts local GPU use')
+    if g['interface'] == 'ChatGPT image generation':
+        require(g['provider'] == 'OpenAI' and g['generation_compute'] == 'OpenAI-hosted'
+                and g['local_gpu_used'] is False, 'contradictory ChatGPT compute disclosure')
+    require(g['D_authorship'] == 'AI-generated and researcher-selected, not independently human-drawn',
+            'incorrect exploratory D authorship')
+    texts(g['human_role'], 'ai_generation.human_role', nonempty=True)
+    p = g['prompt_provenance']
+    fields(p, 'conversation_instructions internal_expanded_prompt history_status history_note',
+           'prompt_provenance')
+    require(p['history_status'] in ('partial', 'complete'), 'prompt history status required')
+    text(p['history_note'], 'prompt history note')
+    instructions = p['conversation_instructions']
+    require(isinstance(instructions, list) and bool(instructions), 'conversation instructions required')
+    for item in instructions:
+        fields(item, 'kind text source scope', 'conversation instruction')
+        require(item['kind'] in ('researcher_instruction', 'researcher_approval',
+                                'researcher_approval_summary'), 'incorrect prompt source kind')
+        for key in ('text', 'source', 'scope'):
+            text(item[key], f'conversation instruction.{key}')
+        require(item['text'] != 'pending_transcription_from_conversation',
+                'pending marker is not conversation evidence')
+    disclosed_value(p['internal_expanded_prompt'], 'internal_expanded_prompt')
+    if p['internal_expanded_prompt']['status'] == 'available':
+        require(p['internal_expanded_prompt']['value'] not in [i['text'] for i in instructions],
+                'conversation instruction cannot substitute for internal prompt')
+
+
 def _unique_keys(pairs):
     result = {}
     for key, value in pairs:
@@ -91,7 +211,9 @@ def validate_manifest(m):
     """Validate all six provenance sections without reading image files."""
     fields(m, "version track sequence_id purpose character_id motion provenance rights "
            "ai_generation selection frames", "manifest")
-    require(type(m['version']) is int and m['version'] == 1, "version must be 1")
+    require(type(m['version']) is int and m['version'] in (1, 2), "version must be 1 or 2")
+    v2 = m['version'] == 2
+    require(not v2 or m['track'] == 'D', "version 2 is exploratory Track D only")
     require(m['track'] in ('A', 'D'), "track must be A or D")
     primary = m['track'] == 'A'
     ids = [f"a{i:02d}" for i in range(1, 7)] if primary else [f"d{i:02d}" for i in range(1, 5)]
@@ -106,36 +228,53 @@ def validate_manifest(m):
         require(m['motion'] == motions[m['sequence_id']], "incorrect exploratory motion")
 
     p = m['provenance']
-    fields(p, "creator created_at method tools authorship_status source_files", "provenance")
+    fields(p, "creator created_at method tools authorship_status source_files" +
+           (" recorded_at" if v2 else ""), "provenance")
     for key in ('creator', 'authorship_status'):
         text(p[key], f"provenance.{key}")
-    created = timestamp(p['created_at'], 'provenance.created_at')
+    event = event_time if v2 else timestamp
+    created = event(p['created_at'], 'provenance.created_at')
+    if v2:
+        timestamp(p['recorded_at'], 'provenance.recorded_at')
+        check_recorded(p['created_at'], p['recorded_at'], 'provenance')
     require(p['method'] == ('rig_assisted_manual_cleanup' if primary else 'ai_generated'),
             "track/provenance method mismatch")
     texts(p['tools'], 'provenance.tools', nonempty=True)
     texts(p['source_files'], 'provenance.source_files', nonempty=True)
 
     r = m['rights']
-    fields(r, "holder usage_basis consent_status consent_basis confirmed_by confirmed_at", "rights")
-    for key in ('holder', 'usage_basis', 'consent_basis', 'confirmed_by'):
-        text(r[key], f"rights.{key}")
-    require(r['consent_status'] in ('confirmed', 'not_required'), "rights: unresolved consent")
-    timestamp(r['confirmed_at'], 'rights.confirmed_at')
+    if v2:
+        rights_v2(r)
+    else:
+        fields(r, "holder usage_basis consent_status consent_basis confirmed_by confirmed_at", "rights")
+        for key in ('holder', 'usage_basis', 'consent_basis', 'confirmed_by'):
+            text(r[key], f"rights.{key}")
+        require(r['consent_status'] in ('confirmed', 'not_required'), "rights: unresolved consent")
+        timestamp(r['confirmed_at'], 'rights.confirmed_at')
 
     g = m['ai_generation']
     if primary:
         require(g is None, "primary track cannot contain AI generation")
     else:
-        generation_record(g)
+        generation_v2(g) if v2 else generation_record(g)
+        if v2:
+            require(g['generated_at'] == p['created_at'], "generation/creation event mismatch")
+            require(g['usage_basis'] == r['usage_basis'], "generation/rights usage mismatch")
 
     s = m['selection']
-    fields(s, "kind k D_path D_sha256 selected_by selected_at before_model_results rationale", "selection")
+    fields(s, "kind k D_path D_sha256 selected_by selected_at before_model_results rationale" +
+           (" recorded_at before_model_results_basis" if v2 else ""), "selection")
     require(s['kind'] == ('artist' if primary else 'exploratory_curator'), "selection kind mismatch")
     require(type(s['k']) is int and 1 <= s['k'] <= 6, "k must be integer 1..6")
     for key in ('selected_by', 'rationale'):
         text(s[key], f"selection.{key}")
-    require(timestamp(s['selected_at'], 'selection.selected_at') >= created,
-            "selection precedes sequence creation")
+    selected = event(s['selected_at'], 'selection.selected_at')
+    if v2:
+        text(s['before_model_results_basis'], 'selection.before_model_results_basis')
+        check_recorded(s['selected_at'], s['recorded_at'], 'selection')
+        chronological(created, selected, "selection precedes sequence creation")
+    else:
+        require(selected >= created, "selection precedes sequence creation")
     require(s['before_model_results'] is True, "selection must precede model results")
     digest(s['D_sha256'], 'selection.D_sha256')
 
@@ -149,13 +288,16 @@ def validate_manifest(m):
         require(f['path'] == f"frames/frame_{index:03d}.png", "noncanonical frame path")
         digest(f['sha256'], 'frame.sha256')
         text(f['creator'], 'frame.creator')
-        timestamp(f['created_at'], 'frame.created_at')
+        event(f['created_at'], 'frame.created_at')
         require(f['method'] == p['method'], "frame method differs from track")
         texts(f['edits'], 'frame.edits')
         if primary:
             require(f['ai_generation'] is None, "primary frame cannot contain AI generation")
         else:
-            generation_record(f['ai_generation'])
+            generation_v2(f['ai_generation']) if v2 else generation_record(f['ai_generation'])
+            if v2:
+                require(f['ai_generation'] == g, 'frame/sequence generation disclosure mismatch')
+                require(f['created_at'] == p['created_at'], 'frame/source creation mismatch')
         pre = f['preprocessing']
         fields(pre, "source_path source_sha256 output_sha256 operations original_preserved "
                "recorded_by recorded_at", "preprocessing")
@@ -172,8 +314,12 @@ def validate_manifest(m):
     d = next(f for f in frames if f['index'] == s['k'])
     require(s['D_path'] == d['path'] and s['D_sha256'] == d['sha256'],
             "D must reference exactly frame k and its hash")
-    require(timestamp(s['selected_at'], 'selection.selected_at') >=
-            timestamp(d['created_at'], 'D.created_at'), "selection precedes D creation")
+    if v2:
+        chronological(event(d['created_at'], 'D.created_at'), selected,
+                      "selection precedes D creation")
+    else:
+        require(selected >= timestamp(d['created_at'], 'D.created_at'),
+                "selection precedes D creation")
 
 
 def validate_dataset(root, *, complete=True):
