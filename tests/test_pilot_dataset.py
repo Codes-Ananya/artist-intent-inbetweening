@@ -42,8 +42,8 @@ def make_sequence(root, track='A', number=1):
     m['rights']['consent_status'] = 'not_required'
     m['rights']['consent_basis'] = 'SYNTHETIC TEST ONLY: rectangles; no depicted person'
     if track == 'D':
-        m['motion'] = ('curved_arm_reach', 'jump_anticipation_landing',
-                       'head_turn_facial_features', 'body_crossing_behind_object')[number - 1]
+        m['motion'] = ('curved_jump', 'hold_then_fast_reach',
+                       'exaggerated_recoil', 'body_turn_self_occlusion')[number - 1]
     folder = root / f'track_{track.lower()}' / m['sequence_id']
     (folder / 'frames').mkdir(parents=True)
     for f in m['frames']:

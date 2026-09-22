@@ -21,10 +21,41 @@ post-result k selection and best-of-many model output selection are prohibited.
 
 | ID | Motion |
 | --- | --- |
-| d01 | Curved arm reach |
-| d02 | Jump with anticipation and landing |
-| d03 | Head turn with facial-feature movement |
-| d04 | Body crossing behind an object |
+| d01 | Curved jump |
+| d02 | Hold-then-fast reach |
+| d03 | Exaggerated recoil |
+| d04 | Body turn with self-occlusion |
+
+The Track D roster was prospectively amended on 2026-09-22 to match the
+researcher-approved source triptychs, before preprocessing approval or inference.
+A, D and B were selected together by the researcher. Method: AI-generated
+exploratory input; provider/tool: OpenAI image generation through ChatGPT.
+The human role was motion specification, iterative visual review and approval.
+D does not represent independently human-authored intent. Track D remains
+excluded from primary Track A research claims. Local normalized assets and
+manifests remain draft/unfrozen pending provenance completion and the complete
+dataset freeze; unknown
+timestamps, prompts, rights evidence and timing choices must not be fabricated
+to obtain a passing validation report.
+
+Researcher visual review approved all 12 normalized Track D frames on
+2026-09-22, with these qualifications:
+
+- d01, d03 and d04 are accepted without adjustment.
+- d02 is accepted as a difficult exploratory sequence. D and B are intentionally
+  close but remain distinguishable through arm extension, torso commitment and
+  stance.
+- Existing source-level scarf, tassel and vest-detail variation is acknowledged
+  and retained as real generative inconsistency.
+- The relatively small character scale is accepted because sequence-wide
+  framing preserves motion coordinates and avoids per-frame recentering.
+- No additional cropping, scaling, retouching or generation is authorized.
+
+This visual approval does not resolve missing provenance timestamps, rights
+holder/confirmation, or prompt transcription and generation-history disclosure.
+Those fields remain unresolved; no substitute timestamps or rights confirmations
+are inferred from approval. Track A and the complete dataset freeze remain
+pending. RIFE must not run yet.
 
 These serve engineering validation and portfolio demonstration only. They have
 no authoritative intermediate animation and no claim of human artistic intent.
@@ -264,7 +295,8 @@ supports engineering demonstrations only. Negative/mixed outcomes are retained.
   review; implement and test landmark/temporal evaluation before any pilot run.
 - Confirm or prospectively amend the proposed descriptive target; deliberate held
   frames need a versioned duplicate policy before freezing assets.
-- Track D generation model/terms and prompts (not selected or executed here),
+- Track D generation model/terms, prompt transcription, missing provenance
+  timestamps and rights confirmation (visual approval is complete),
   optional existing-local LPIPS availability, and the future run environment.
 
 These are preparation gates, not permission to begin generation or evaluation.

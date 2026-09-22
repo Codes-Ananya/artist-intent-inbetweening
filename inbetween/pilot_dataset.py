@@ -101,8 +101,8 @@ def validate_manifest(m):
     for key in ('character_id', 'motion'):
         text(m[key], key)
     if not primary:
-        motions = {'d01': 'curved_arm_reach', 'd02': 'jump_anticipation_landing',
-                   'd03': 'head_turn_facial_features', 'd04': 'body_crossing_behind_object'}
+        motions = {'d01': 'curved_jump', 'd02': 'hold_then_fast_reach',
+                   'd03': 'exaggerated_recoil', 'd04': 'body_turn_self_occlusion'}
         require(m['motion'] == motions[m['sequence_id']], "incorrect exploratory motion")
 
     p = m['provenance']

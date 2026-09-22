@@ -4,7 +4,7 @@
   "sequence_id": "d01",
   "purpose": "exploratory_only",
   "character_id": "REPLACE_original_character_id",
-  "motion": "curved_arm_reach",
+  "motion": "curved_jump",
   "provenance": {
     "creator": "REPLACE_creator",
     "created_at": "REPLACE_ISO8601_with_timezone",
