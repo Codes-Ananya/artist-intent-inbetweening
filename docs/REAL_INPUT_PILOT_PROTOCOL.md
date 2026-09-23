@@ -5,6 +5,37 @@ model execution, pilot metrics or results exist in this change. Base: Milestone 
 commit `bc09d3b84e4e6b105f209afb57e38fe048764eb5`. Existing experiments remain
 frozen. This protocol proposes a small descriptive pilot, not a population study.
 
+## Approved Track A planning addendum (2026-09-23)
+
+The researcher approved the Track A planning package and final character,
+staging, usage and role decisions in the
+[Track A production plan](track_a_planning/PRODUCTION_PLAN.md),
+[character specification template](track_a_planning/CHARACTER_SPEC_TEMPLATE.md)
+and [records/validation plan](track_a_planning/RECORDS_AND_VALIDATION.md).
+Asha (`track-a-asha-v1`) supersedes the provisional character description below
+for Track A only. The eight-landmark definition in Primary metrics supersedes
+scarf/boot/cuff-specific wording for Track A only. Track D's contract, assets,
+approvals and status are unchanged. Numeric artistic tolerances are review
+guidance; the production plan separately lists hard gates and rejection rules.
+Ananya is sole artist, artistic-intent authority and reference-landmark creator;
+Samiksha is compliance reviewer, reference verifier and primary model-output
+annotator. Permitted uses are local research/evaluation, publication figures and
+portfolio demonstration; dataset redistribution is not currently authorized.
+Authorship and usage authority do not assert a broader legal conclusion.
+Planning approval is not evidence of actual production events, signatures,
+dataset acceptance, freeze or inference authorization. Prospective D/k intent
+remains separate from later final-frame hash binding. Sidecar/annotation contracts
+are prose specifications, not implemented executable validation. Executable
+landmark metrics, annotation validation, sidecar validation and accepted-version
+inventory validation remain future pre-inference work. The records plan defines
+immutable revision events, independent review revision IDs, separate reviewer
+copies/overlays and accepted-version inventory paths. Its one-way dependency
+order is selection_intent plus source/guide/Krita/final-export artifacts → immutable
+per-frame sidecars → gate_review → selection_binding → admission → accepted-version
+inventory. No downstream record is hashed upstream; this avoids circular/self-
+referential dependencies. Sidecars are immutable once submitted for gate review
+and contain no canonical-copy, gate-review, binding, admission or inventory hashes.
+
 ## Strictly separate tracks
 
 **Track A — primary evaluation:** six complete original sequences, eight
@@ -32,11 +63,16 @@ A, D and B were selected together by the researcher. Method: AI-generated
 exploratory input; provider/tool: OpenAI image generation through ChatGPT.
 The human role was motion specification, iterative visual review and approval.
 D does not represent independently human-authored intent. Track D remains
-excluded from primary Track A research claims. Local normalized assets and
-manifests remain draft/unfrozen pending researcher review of the corrected
-provenance records and the complete dataset freeze; unknown
-timestamps, prompts, rights evidence and timing choices must not be fabricated
-to obtain a passing validation report.
+excluded from primary Track A research claims. Track D is complete and
+researcher-approved: `researcher_approved`,
+`provenance_complete_with_disclosed_limitations`, and
+`ready_for_complete_dataset_freeze_review`; `frozen=false` and
+`inference_authorized=false`. Both Ananya Anand and Samiksha Prasad approved the
+provenance/usage record. Usage permits research/evaluation, publication figures
+and portfolio use; dataset redistribution is not currently authorized.
+The combined six-Track-A/four-Track-D dataset freeze review remains pending.
+Inference remains unauthorized until that complete-dataset freeze succeeds.
+Track D provenance and usage decisions are complete and are not reopened.
 
 Researcher visual review approved all 12 normalized Track D frames on
 2026-09-22, with these qualifications:
@@ -55,10 +91,10 @@ Visual approval is distinct from provenance and usage confirmation. A subsequent
 authorized researcher declaration supplies project usage authority, and the
 Track D version 2 contract records date-only historical events, recovered
 conversation excerpts, and explicitly unavailable internal generation metadata.
-Complete generation history is not claimed. Corrected local manifests remain
-proposed records for researcher review; no timestamps or ownership claims are
-inferred from visual approval. Track A and the complete dataset freeze remain
-pending. RIFE must not run yet.
+Complete generation history is not claimed. The corrected local manifests are
+researcher-approved with disclosed limitations; no timestamps or ownership claims
+are inferred from visual approval. Track A production and the combined complete-
+dataset freeze review remain pending. RIFE must not run yet.
 
 These serve engineering validation and portfolio demonstration only. They have
 no authoritative intermediate animation and no claim of human artistic intent.
@@ -74,13 +110,19 @@ shared record and document extraction in each frame's preprocessing. For multipl
 calls, include the complete ordered generation history in prompt/edits text.
 Generation is future, separately authorized work; this preparation performs none.
 
-## Provisional character and asset contract
+## Character and asset contract
+
+Track A uses the approved Asha specification linked above, including its exact
+palette and construction guidance. The following provisional description is
+retained as historical context, not an instruction to redraw Track D or produce
+Track A with scarf/boots:
 
 An original simple full-body humanoid with a distinctive hair silhouette, visible
 facial features, jacket and cuffs, asymmetrical scarf, trousers and boots. Dark
 approximately 5-pixel line, off-white background, minimal shading, fixed camera.
 Canonical evaluation assets are single-frame **512×512 RGB PNG**, without alpha.
-RGB is a provisional explicit choice to avoid implicit compositing at evaluation.
+RGB is required for Track A and retained unchanged for Track D, avoiding implicit
+compositing at evaluation.
 Artist review must confirm the recurring identity and visible design details;
 file validation cannot establish authorship, pose quality or manual cleanup.
 
@@ -152,6 +194,11 @@ version 2 corrections described immediately below it.
 | Preprocessing | source_path, source_sha256, output_sha256, operations, original_preserved=true, recorded_by, recorded_at |
 | Rights/consent | holder, usage_basis, consent_status (confirmed or not_required), consent_basis, confirmed_by, confirmed_at |
 
+For Track A, v1 `rights.usage_basis` must explicitly state: local
+research/evaluation permitted; publication figures permitted; portfolio
+demonstration permitted; dataset redistribution not authorized. These statements
+use the existing text field, not separate executable `permitted_uses` fields.
+
 Version 1 timestamps use ISO 8601 with timezone; all file hashes use lowercase SHA-256.
 Rights scope must cover local evaluation and separately state whether portfolio
 publication and dataset sharing are allowed. Record creator and any depicted
@@ -217,7 +264,8 @@ declaration or actual dataset manifest is tracked.
 
 Known unexposed model/settings/internal prompts are reproducibility limitations,
 not values to invent. Partial conversation history can be honestly ingested;
-its sufficiency for exploratory use requires researcher review. A successful
+its sufficiency for exploratory use requires researcher review, already completed
+for the approved Track D records. A successful
 version 2 validation certifies structural ingestion only, never a dataset freeze.
 
 ## Validation and freezing gates
@@ -248,9 +296,10 @@ records approval, and freezes copies plus SHA-256 hashes of manifests, images,
 selection records, protocol, annotations, code commit and tool/backend versions.
 Record freeze time before any model run; selections must predate it. Store
 read-only provenance snapshots and a review record with reviewer, timestamp,
-checks, evidence and outstanding issues. Changes require a new version with a
-reason and explicit exclusion of the old version; never select a revision using
-model performance. This task implements ingestion only, not an evaluation runner,
+checks, evidence and outstanding issues. Before model exposure, changes require a new version with a
+reason and explicit exclusion of the old version. After exposure, authoritative
+primary frames cannot be repaired or replaced; disclose or exclude under the
+approved rules. Never select a revision using model performance. The existing implementation provides ingestion only, not an evaluation runner,
 annotation UI or automatic freeze-signing system.
 
 ## Frozen comparison
@@ -292,17 +341,44 @@ guided for errors. Report absolute values, paired deltas and all six cases.
 2. **Symmetric Chamfer:** half the sum of the two directional mean nearest-edge
    Euclidean distances in pixels, matching existing `benchmark_metrics.py`.
    Both maps empty gives 0; one empty gives image diagonal sqrt(512²+512²).
-3. **Landmark trajectory error:** mean Euclidean position error in pixels over E
-   and reference-visible landmarks; also show trajectories and per-landmark
-   errors. Freeze artist reference points before inference: nose tip, left/right
-   wrist (cuff center), left/right boot toe, and scarf free tip. Coordinates use
-   image x right/y down, origin at top-left pixel center, range [0,511]. Freeze
-   visibility and anatomical identity per frame; do not infer hidden points.
-   Independently annotate outputs in randomized, method-blinded order using the
-   same rubric. A reference-visible but missing/unidentifiable output point gets
-   image-diagonal penalty, never omission. Reference-invisible points are excluded
-   symmetrically with counts. A sequence with no eligible points fails coverage.
-   This is sampled trajectory-position error, not optical flow or inferred intent.
+3. **Landmark trajectory error (Track A):** mean Euclidean position error in
+   pixels over E and eligible landmarks; show trajectories, per-landmark errors
+   and coverage. The approved eight-point set is nose tip, anatomical left elbow,
+   anatomical right elbow, anatomical left wrist/hand-base center, anatomical
+   right wrist/hand-base center, anatomical left sneaker toe, anatomical right
+   sneaker toe, and braid free tip. This replaces the old scarf/boot/cuff wording
+   for Track A only; it changes no Track D record or exploratory contract.
+   Coordinates use image x right/y down, origin at top-left pixel center, range
+   [0,511]. Paired landmark eligibility is determined only by the authoritative
+   Track A reference frame at that timeline index. If a landmark is invisible or
+   genuinely occluded in the reference, exclude that landmark/index from both
+   methods’ positional scores; retain and report the exclusion and reference
+   visibility status. Never estimate hidden reference positions.
+   If reference-visible, the landmark remains eligible for both methods. Annotate
+   a coordinate normally when identifiable in an output. If missing, malformed,
+   merged, severed or otherwise unidentifiable, assign the existing image-diagonal
+   penalty sqrt(512²+512²) pixels to that method; do not remove the landmark/index
+   from either method’s evaluation mask. An output-specific occlusion absent from
+   the reference is generated-result failure/behavior, not an eligibility reason:
+   record its output visibility/failure category and apply the same penalty.
+   Preserve raw reference and per-method visibility/status records. Report total
+   reference-visible eligible landmarks, valid-coordinate count per method,
+   penalized missing/unidentifiable count per method (including output-only
+   occlusion), reference-occluded/invisible exclusions, and per-landmark coverage
+   and error. Counts refer to landmark/index observations over the scored set E.
+   A sequence/index with no reference-visible eligible landmarks cannot contribute
+   a landmark score and must be reported as a coverage failure, never silently
+   dropped from aggregate reporting or represented as zero error.
+   Ananya creates reference landmarks, Samiksha verifies them, and references
+   must be resolved and frozen before inference. Samiksha annotates randomized,
+   method-hidden model outputs; she cannot choose the shared evaluation mask
+   based on perceived method quality. Ananya adjudicates only documented ambiguous
+   cases after Samiksha’s initial annotation; preserve initial records and reasons.
+   The shared mask is fixed from references, independent of output annotation or
+   adjudication. This is sampled trajectory-position error, not optical flow or
+   inferred intent. Operational status/blinding rubrics and executable metric
+   implementation and annotation validation remain pre-inference work; reference-
+   only eligibility is approved, not an unresolved mask choice.
 4. **Temporal flicker/consistency:** mean over P of
    `mean_pixels(abs((Y[i+1]-Y[i])-(R[i+1]-R[i])))`, using grayscale intensities
    scaled to [0,1] and signed floating-point differences (Y output, R reference).
@@ -317,10 +393,14 @@ guided for errors. Report absolute values, paired deltas and all six cases.
    never averaged away. Encoded GIF/MP4 previews are not preservation evidence.
 
 Landmark annotation files under `freeze/` must record sequence, frame index,
-landmark name, visibility, x/y or null for hidden points, annotator, timestamp and
-reference image hash. Candidate records additionally identify output hash and
-blinded code. Fix the mapping and adjudication process before inference, retain
-original annotations, and report disagreement; do not tune landmarks to outputs.
+landmark name, raw reference visibility/status, x/y or null for hidden reference
+points, annotator, timestamp and reference image hash. Candidate records retain
+per-method visibility/failure status, valid x/y or null if unidentifiable, output
+hash and blinded code. Store penalty/error separately from coordinates; a null
+output coordinate never removes a reference-visible observation from the mask.
+Use the approved Track A roles and eight-point mapping above;
+finalize the operational visibility/blinding rubric before inference, retain original
+annotations, and report disagreement; do not tune landmarks to outputs.
 The ingest validator does not yet validate these future annotation records.
 
 **Secondary only:** PSNR and SSIM using existing grayscale definitions; represent
@@ -354,17 +434,50 @@ supports engineering demonstrations only. Negative/mixed outcomes are retained.
 
 ## Decisions still requiring pre-inference resolution
 
-- Artist/reviewer identity, six motions, timing rationale, rig/tool choice and
-  original character design approval; confirm the provisional RGB/line styling.
-- Source archive, authorship, usage/publication permissions and consent evidence.
-- Actual D/k choices, declared model non-exposure and timestamped freeze review.
-- Landmark annotation staffing, blinding/adjudication logistics and repeatability
-  review; implement and test landmark/temporal evaluation before any pilot run.
+- a02–a06 motions, timing and D/k choices; a01 character, staging, formal t=i/7,
+  preview 8 fps and A=0/D=4/B=7/k=4 are approved. A passing a01 occupies one of
+  the final six slots, subject to actual acceptance records.
+- Actual approved model-sheet measurements, a01 foot/target coordinates, local
+  tool versions/profile/export settings, source archive and rig origin, hashes,
+  timestamps, revisions, rights/consent evidence, approvals and signatures.
+  Approved Track A use scopes and named roles are no longer open decisions.
+- Actual final-frame D/k hash bindings, model non-exposure evidence and timestamped
+  freeze review; preserve the earlier prospective intent separately.
+- Operational visibility rubric, randomized method-hidden annotation logistics
+  and repeatability review; staffing/adjudication roles are approved above.
+  Implement and test landmark/temporal evaluation before any pilot run.
 - Confirm or prospectively amend the proposed descriptive target; deliberate held
   frames need a versioned duplicate policy before freezing assets.
-- Researcher review of corrected Track D version 2 provenance and local usage
-  declaration, including date precision and partial conversation-history limits
-  (visual approval is complete),
-  optional existing-local LPIPS availability, and the future run environment.
+- Track D is complete and researcher-approved, including its provenance/usage
+  record with disclosed date precision and partial conversation-history limits.
+  The combined six-Track-A/four-Track-D dataset freeze review remains pending;
+  inference remains unauthorized until that complete-dataset freeze succeeds.
+- Optional existing-local LPIPS availability and the future run environment.
 
 These are preparation gates, not permission to begin generation or evaluation.
+
+## Track A review safeguards
+
+Samiksha never edits or saves an authoritative `.kra`. Only Ananya may edit
+these sources, including all hidden layers. Samiksha’s review notes and landmark
+overlays live in separate review copies/sidecars.
+
+For a01, the blinded model-output quality/landmark annotation pool contains only
+E = {1, 2, 3, 5, 6} for both endpoint-only and guided methods. Do not include
+A, D/k or B; evaluate authoritative-slot preservation diagnostics separately.
+For later sequences, use the protocol’s generated-only E excluding their approved k.
+Samiksha performs initial annotation using randomized, method-hidden codes.
+Ananya receives only the same blinded codes during adjudication. The endpoint-only/
+guided method key remains sealed until all initial annotations and adjudications
+are complete. Record the original ambiguity flag, who raised it, initial
+annotation, adjudication decision and reason; preserve both original and
+adjudicated values. Output status cannot remove a reference-visible point from
+paired eligibility; output-only missing/occluded/unidentifiable points receive
+the image-diagonal penalty. Only authoritative-reference visibility determines
+the shared mask.
+
+After any sequence has been exposed to model output, do not repair or replace
+its authoritative primary frames. Report defects and either retain with disclosure
+or exclude the sequence from primary eligibility under the approved rules.
+Never use model results to guide a corrected authoritative frame. Rework and
+new source revisions are permitted only before model exposure.
