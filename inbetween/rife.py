@@ -27,7 +27,10 @@ class RifeBackend(InterpolationBackend):
     version = "RIFE_m arbitrary-timestep @ " + SOURCE_COMMIT[:12]
     max_working_pixels = 512 * 512
 
-    def __init__(self, asset_root: str | Path = DEFAULT_ROOT):
+    def __init__(self, asset_root: str | Path = DEFAULT_ROOT, *, flow_scale: float = 1.0):
+        if flow_scale not in (0.5, 1.0):
+            raise ValidationError("Flow scale must be 0.5 or 1.0")
+        self.flow_scale = flow_scale
         self.asset_root = Path(asset_root)
         self.last_run_metadata: dict = {}
 
@@ -88,7 +91,7 @@ class RifeBackend(InterpolationBackend):
             images = []
             with torch.inference_mode():
                 for timestamp in times:
-                    result = model.inference(a, b, timestep=timestamp)
+                    result = self._model_inference(model, a, b, timestamp)
                     rgb = result[0, :, :work_height, :work_width].clamp(0, 1).mul(255).round().byte().cpu().permute(1, 2, 0).numpy()
                     image = Image.fromarray(rgb, mode="RGB")
                     if work_size != (width, height):
@@ -104,6 +107,11 @@ class RifeBackend(InterpolationBackend):
             if "out of memory" in str(exc).lower():
                 raise RifeError("RIFE ran out of GPU memory. Reduce input resolution; 512×512 is recommended for 6GB VRAM.") from exc
             raise RifeError(f"RIFE inference failed: {exc}") from exc
+
+    def _model_inference(self, model, a, b, timestamp):
+        # Preserve the historical default call exactly.
+        kwargs = {} if self.flow_scale == 1.0 else {"scale": self.flow_scale}
+        return model.inference(a, b, timestep=timestamp, **kwargs)
 
     def generate(self, first: Image.Image, last: Image.Image, intermediate_count: int) -> list[Image.Image]:
         self.last_model_load_seconds = None
@@ -130,7 +138,7 @@ class RifeBackend(InterpolationBackend):
             preprocessing["alpha"] = "RGB composited over white for inference; alpha channels linearly interpolated"
         else:
             preprocessing["alpha"] = "none"
-        self.last_run_metadata = {"backend_version": self.version, "source_commit": SOURCE_COMMIT, "checkpoint_id": CHECKPOINT_ID, "checkpoint_sha256": CHECKPOINT_SHA256, "device": "cuda:0", "dtype": "float32", "requested_intermediate_count": intermediate_count, "generated_intermediate_count": len(images), "timestamps": times, "preprocessing": preprocessing, "inference_seconds": seconds, "peak_cuda_memory_bytes": peak}
+        self.last_run_metadata = {"flow_scale": self.flow_scale, "backend_version": self.version, "source_commit": SOURCE_COMMIT, "checkpoint_id": CHECKPOINT_ID, "checkpoint_sha256": CHECKPOINT_SHA256, "device": "cuda:0", "dtype": "float32", "requested_intermediate_count": intermediate_count, "generated_intermediate_count": len(images), "timestamps": times, "preprocessing": preprocessing, "inference_seconds": seconds, "peak_cuda_memory_bytes": peak}
         if self.last_model_load_seconds is not None:
             self.last_run_metadata["model_load_seconds"] = self.last_model_load_seconds
         return [first.copy(), *images, last.copy()]

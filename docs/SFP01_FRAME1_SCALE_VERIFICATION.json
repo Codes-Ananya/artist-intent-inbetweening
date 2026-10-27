@@ -1,0 +1,103 @@
+{
+  "run": "outputs/sfp01-frame1-scale-20261027T170646Z-caeb63e7",
+  "archived_status": "completed_pending_visual_review",
+  "archives": {
+    "outputs/sfp01-frame1-scale-20261027T170646Z-caeb63e7": 22,
+    "/home/ananya_anand/projects/animation-inbetweening/outputs/sfp01-extra-20261027T041321Z-539ba9c6": 22
+  },
+  "frame_pixel_equal": {
+    "0": true,
+    "1": false,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+  },
+  "exports": {
+    "candidate": {
+      "gif_durations_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4": {
+        "width": 512,
+        "height": 512,
+        "r_frame_rate": "8/1",
+        "duration": "1.000000",
+        "nb_read_frames": "8"
+      }
+    },
+    "side_by_side": {
+      "gif_durations_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4": {
+        "width": 1024,
+        "height": 560,
+        "r_frame_rate": "8/1",
+        "duration": "1.000000",
+        "nb_read_frames": "8"
+      }
+    }
+  },
+  "preservation": {
+    ".local/real_input_pilot/synthetic_pilot/sfp_01/exploratory_execution_r001/preservation_before.json": 152,
+    ".local/real_input_pilot/synthetic_pilot/sfp_01/extra_breakdown_f002_r001/preservation_before.json": 194
+  },
+  "output_hashes": 21,
+  "code_hashes": 2,
+  "input_hashes": 4,
+  "diagnostics": {
+    "flow_scale": 0.5,
+    "backend_version": "RIFE_m arbitrary-timestep @ 5d8adbdd40e1",
+    "source_commit": "5d8adbdd40e12c2c8f91930eff838aebe561c086",
+    "checkpoint_id": "RIFE_m_train_log/flownet.pkl",
+    "checkpoint_sha256": "9f9e2e8b5c3fef311c9a782aa17a30f87c388ce6dc9c00e4993eba3d3941d3cb",
+    "device": "cuda:0",
+    "dtype": "float32",
+    "requested_intermediate_count": 1,
+    "generated_intermediate_count": 1,
+    "timestamps": [
+      0.5
+    ],
+    "preprocessing": {
+      "original_size": [
+        512,
+        512
+      ],
+      "working_size": [
+        512,
+        512
+      ],
+      "resize_method": "none",
+      "padding": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "mode": "replicate"
+      },
+      "output_restore": "crop",
+      "alpha": "none"
+    },
+    "inference_seconds": 0.7153360480006086,
+    "peak_cuda_memory_bytes": 193264128,
+    "model_load_seconds": 1.7714967089996208
+  },
+  "verdict": "Negative result: scale 0.5 did not visibly resolve fading/smearing; retain scale 1 baseline"
+}

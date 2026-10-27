@@ -43,3 +43,16 @@ Existing `.venv`: full `python -m pytest -q` completed with 194 passed, 1 skippe
 ## Remaining work
 
 Push the checkpoint branch to the user-authorized existing public origin and verify remote HEAD matches local commit; final handoff records the actual outcome. Copy the verified asset archive and Git bundle to durable separate storage when a destination is available; same-disk redundancy does not protect against disk loss. User motion review remains separate from assistant review. Further experiment design/reference collection or input refinement requires a new task; do not silently turn this exploratory example into Track A/D data or regenerate approved poses.
+
+
+## Frame-1 scale experiment checkpoint addendum
+
+Completed run: `outputs/sfp01-frame1-scale-20261027T170646Z-caeb63e7`; earlier failed attempt: `outputs/sfp01-frame1-scale-20261027T170356Z-de19024c`. Both preserved, no inference rerun for review. Results retain their historical status; separate review: `docs/SFP01_FRAME1_SCALE_EXPERIMENT.md`. Verification: `docs/SFP01_FRAME1_SCALE_VERIFICATION.json`.
+
+Negative result: scale 0.5 did not visibly resolve the fading/smearing. Extended hand/arm looks paler; vest overlap remains. Only frame 1 differs from the extra-breakdown baseline; all seven other PNGs and four supplied inputs match exactly. All 21 output hashes, 22 archive entries, two code hashes and baseline archive checks passed. RTX 4050 cuda:0 float32 generated one midpoint; inference 0.715336 s, generation wall 2.547167 s, peak allocated memory 193,264,128 bytes. Exports decode correctly at eight frames/one second. Prior 152/194-file preservation snapshots match, including Track A/D.
+
+Scale 1 stays the default and baseline. The optional scale control, isolated runner, tests and report are being committed after review; no outputs, weights or credentials are staged. Previous checkpoint commit `3268bad32ad78d877eb1d3c097a2d0e5bd9b1544` was successfully pushed to the user-authorized public origin (verified then); this addendum does not claim a new push. Use `git log -1` for the new review commit. Earlier local backup predates these new runs: they remain in outputs and are not claimed to be in that archive.
+
+Restart by reading the completed-review section, inspecting `outputs/sfp01-frame1-scale-20261027T170646Z-caeb63e7/frames_0_1_2.png` and `side_by_side/animation.mp4`, and verifying `archive.sha256` from that run directory. Do not rerun inference to review evidence. Remaining work is a choice of next experiment, not a sweep: one independently supplied occlusion-consistent frame-1 pose (smallest manual workflow test, unequal input budget), or a more involved arm/vest mask-and-clean-plate compositing diagnostic. Neither has begun. No new pose is approved or generated.
+
+Review validation: full pytest suite 197 passed, 1 skipped in 47.36 s, including sample export; diff whitespace checks passed. Commit scope is six files: backend, frame-1 runner/test, experiment report, verification JSON and this checkpoint. Generated evidence remains ignored.
