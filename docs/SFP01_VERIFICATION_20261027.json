@@ -1,0 +1,71 @@
+{
+  "run": "/home/ananya_anand/projects/animation-inbetweening/outputs/sfp01-extra-20261027T041321Z-539ba9c6",
+  "status": "completed_pending_visual_review",
+  "archives": {
+    "/home/ananya_anand/projects/animation-inbetweening/outputs/sfp01-extra-20261027T041321Z-539ba9c6": 22,
+    "/home/ananya_anand/projects/animation-inbetweening/outputs/sfp01-20261027T033651Z-462f2bc4": 32
+  },
+  "exports": {
+    "extra_breakdown": {
+      "png_count": 8,
+      "gif_durations_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4": {
+        "width": 512,
+        "height": 512,
+        "r_frame_rate": "8/1",
+        "duration": "1.000000",
+        "nb_read_frames": "8"
+      }
+    },
+    "side_by_side": {
+      "png_count": 8,
+      "gif_durations_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4": {
+        "width": 1024,
+        "height": 560,
+        "r_frame_rate": "8/1",
+        "duration": "1.000000",
+        "nb_read_frames": "8"
+      }
+    }
+  },
+  "preservation_snapshots": {
+    ".local/real_input_pilot/synthetic_pilot/sfp_01/exploratory_execution_r001/preservation_before.json": {
+      "count": 152,
+      "mismatches": []
+    },
+    ".local/real_input_pilot/synthetic_pilot/sfp_01/extra_breakdown_f002_r001/preservation_before.json": {
+      "count": 194,
+      "mismatches": []
+    }
+  },
+  "output_hashes": 21,
+  "code_hashes": 4,
+  "input_hashes": 4,
+  "pixel_checks": {
+    "0": true,
+    "2": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+  }
+}

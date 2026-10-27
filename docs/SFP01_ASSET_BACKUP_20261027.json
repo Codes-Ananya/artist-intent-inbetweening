@@ -1,0 +1,12 @@
+{
+  "archive": "/home/ananya_anand/projects/animation-inbetweening/.local/backups/sfp01-20261027/pilot-assets-and-outputs.tar.gz",
+  "sha256": "e78a55a5b9e96f4ffd0595114534627524238debf7c92ca1502decf4b5251ee2",
+  "size_bytes": 96822374,
+  "verified_file_count": 5788,
+  "verification": "Every archived member read back and SHA-256 matched to source; source rechecked after archive creation",
+  "scope": [
+    ".local/real_input_pilot (all Track A/D and SFP-01 assets, provenance, approvals, prior failures)",
+    "outputs (all existing completed and failed runs)"
+  ],
+  "limitations": "Local same-filesystem backup only; not off-device or remote. Excludes pytest-temp fixtures/symlinks, model assets, virtual environment and credentials."
+}
