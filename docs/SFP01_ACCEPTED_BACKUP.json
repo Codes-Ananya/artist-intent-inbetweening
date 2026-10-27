@@ -1,0 +1,9 @@
+{
+  "archive": "/home/ananya_anand/projects/animation-inbetweening/.local/backups/sfp01-layered-accepted-20261027/pilot-evidence.tar.gz",
+  "archive_sha256": "13201a149877f203590d40c7930d18fa72f2f6633670f222cb82e33ee218d544",
+  "bytes": 58965994,
+  "verified_files": 337,
+  "verified": "Every archive member read back and hashed; source files rechecked after backup",
+  "scope": "All local real_input_pilot assets (including Track A/D), original/refined layered runs and masks, scale completed/failed runs, extra-breakdown completed/failed runs, baseline completed/failed runs, acceptance record",
+  "limitation": "Same-filesystem local backup only, not off-device. No weights, virtual environment or credentials."
+}

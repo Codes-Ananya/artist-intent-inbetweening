@@ -1,0 +1,42 @@
+{
+  "run": "outputs/sfp01-layered-refined-20261027T172313Z-f78a5da1",
+  "exports": {
+    "candidate": {
+      "gif_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4_frames": 8,
+      "fps": 8,
+      "seconds": 1,
+      "width": 512,
+      "height": 512
+    },
+    "side_by_side": {
+      "gif_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4_frames": 8,
+      "fps": 8,
+      "seconds": 1,
+      "width": 1536,
+      "height": 560
+    }
+  },
+  "archive_entries": 42,
+  "output_hashes": 41,
+  "only_frame1_changed_against_both": true
+}

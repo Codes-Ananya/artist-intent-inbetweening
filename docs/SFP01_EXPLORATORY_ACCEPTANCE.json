@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-27T17:28:14.924628+00:00",
+  "reviewer": "user",
+  "status": "accepted_exploratory_demonstration",
+  "user_statement": "Accept the refined layered frame as an exploratory demonstration, with its manual interventions and remaining elbow/transition limitations disclosed.",
+  "refined_run": "outputs/sfp01-layered-refined-20261027T172313Z-f78a5da1",
+  "refined_frame1_sha256": "f2a119f3348bbb65079e598df310951ea2d73789dcd925c403ecb2c5bb728545",
+  "refined_archive_sha256": "58330bfb4565cb661a47576a08cc3dd9a1a9f4a71b76b1d9a4ff6af49b9ed084",
+  "original_run": "outputs/sfp01-layered-20261027T171613Z-e7e5f278",
+  "original_archive_sha256": "2fa61997d40b4a6547191e9b0c3ee9ca96580925785b2876a9c46595676b4f8a",
+  "scope": "Acceptance of this demonstration only; manual masks, patch reconstruction and articulation; residual elbow and abrupt-transition limitations. Not ground truth, automatic intent preservation, production approval or new baseline."
+}

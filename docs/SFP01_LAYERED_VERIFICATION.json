@@ -1,0 +1,38 @@
+{
+  "run": "outputs/sfp01-layered-20261027T171613Z-e7e5f278",
+  "exports": {
+    "candidate": {
+      "gif_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4_frames": 8,
+      "fps": 8,
+      "seconds": 1
+    },
+    "side_by_side": {
+      "gif_ms": [
+        120,
+        130,
+        120,
+        130,
+        120,
+        130,
+        120,
+        130
+      ],
+      "mp4_frames": 8,
+      "fps": 8,
+      "seconds": 1
+    }
+  },
+  "archive_entries": 32,
+  "output_hashes": 31,
+  "only_frame1_changed": true
+}
